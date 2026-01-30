@@ -20,7 +20,7 @@ sleep 5
 echo "🚀 Starting External Tunnel (Cloudflared)..."
 # Use full path we found earlier or rely on PATH if brew installed
 PATH=$PATH:/opt/homebrew/bin
-nohup cloudflared tunnel --url http://127.0.0.1:8502 > tunnel.log 2>&1 &
+nohup cloudflared tunnel --url http://192.168.8.184:8502 > tunnel.log 2>&1 &
 TUNNEL_PID=$!
 echo "✅ Tunnel running (PID: $TUNNEL_PID)"
 
