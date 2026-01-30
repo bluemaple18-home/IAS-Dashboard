@@ -1,0 +1,77 @@
+import pandas as pd
+import numpy as np
+
+def analyze_sq_logic(file_path):
+    print(f"🧐 正在分析 Site Quality 邏輯: {file_path}")
+    
+    try:
+        df_raw = pd.read_excel(file_path, skiprows=1)
+        headers = df_raw.iloc[0].values
+        df = df_raw.iloc[1:].copy()
+        df.columns = headers
+        
+        # 數值化
+        for col in df.columns:
+            if col != 'Placement Id':
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+        
+        active_data = df[df['Total Tracked Ads'] > 0].copy()
+        print(f"分析樣本數: {len(active_data)}")
+
+        results = []
+
+        # 1. 加總關係: RVI = Incentivized + Proxy ?
+        if all(c in active_data.columns for c in ['Reduced Value Inventory (RVI) Ads', 'Incentivized Browsing (RVI) Ads', 'Proxy Server (RVI) Ads']):
+            diff = (active_data['Reduced Value Inventory (RVI) Ads'] - (active_data['Incentivized Browsing (RVI) Ads'] + active_data['Proxy Server (RVI) Ads'])).abs().sum()
+            status = "✅ 吻合" if diff < 1 else f"❌ 不吻合 (差異 {diff})"
+            results.append(f"【加總】Reduced Value Inventory (RVI) Ads = Incentivized + Proxy ({status})")
+
+        # 2. 比例分母探查
+        den_candidates = ['Total Eligible Ads for Site Quality', 'Total Tracked Ads']
+        
+        # % seeThrough Ads
+        if '% seeThrough Ads' in active_data.columns:
+            for den_name in den_candidates:
+                if den_name in active_data.columns:
+                    temp_df = active_data[active_data[den_name] > 0]
+                    if len(temp_df) > 0:
+                        calc = (temp_df['seeThrough Ads'] / temp_df[den_name]) * 100
+                        diff = (temp_df['% seeThrough Ads'] - calc).abs().mean()
+                        if diff < 0.1:
+                            results.append(f"【比例】% seeThrough Ads = (seeThrough Ads / {den_name}) * 100 (✅ 吻合)")
+                            break
+
+        # % Reduced Value Inventory (RVI) Ads
+        if '% Reduced Value Inventory (RVI) Ads' in active_data.columns:
+             for den_name in den_candidates:
+                 if den_name in active_data.columns:
+                     temp_df = active_data[active_data[den_name] > 0]
+                     if len(temp_df) > 0:
+                         calc = (temp_df['Reduced Value Inventory (RVI) Ads'] / temp_df[den_name]) * 100
+                         diff = (temp_df['% Reduced Value Inventory (RVI) Ads'] - calc).abs().mean()
+                         if diff < 0.1:
+                             results.append(f"【比例】% RVI Ads = (RVI / {den_name}) * 100 (✅ 吻合)")
+                             break
+
+        # Invisible URL rate
+        if 'Invisible URL rate' in active_data.columns:
+             for den_name in den_candidates:
+                 if den_name in active_data.columns:
+                     temp_df = active_data[active_data[den_name] > 0]
+                     if len(temp_df) > 0:
+                         # rate might be 0-1 or 0-100, checking 0-100 first
+                         calc = (temp_df['Invisible URL Ads'] / temp_df[den_name]) * 100
+                         diff = (temp_df['Invisible URL rate'] - calc).abs().mean()
+                         if diff < 0.1:
+                             results.append(f"【比例】Invisible URL rate = (Invisible URL Ads / {den_name}) * 100 (✅ 吻合)")
+                             break
+
+        print("\n--- 邏輯分析結果 ---")
+        for r in results:
+            print(r)
+            
+    except Exception as e:
+        print(f"❌ 分析失敗: {e}")
+
+if __name__ == "__main__":
+    analyze_sq_logic('/Users/mattkuo/Downloads/sample-Site-Quality_20260125-20260126.xlsx')
