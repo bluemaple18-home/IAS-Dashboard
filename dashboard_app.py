@@ -85,7 +85,7 @@ st.markdown("""
 
 @st.cache_data
 def load_data():
-    file_path = "/Users/mattkuo/Downloads/00_全媒體整合報表_版位級別.csv"
+    file_path = "./data/00_全媒體整合報表_版位級別.csv"
     try:
         df = pd.read_csv(file_path, dtype=object)
         if '日期' in df.columns:
