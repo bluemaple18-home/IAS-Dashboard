@@ -7,9 +7,9 @@ import os
 
 # Set page config
 # --- CONFIGURATION ---
-st.set_page_config(layout="wide", page_title="IAS 廣告成效儀表板 v1.1.0")
+st.set_page_config(layout="wide", page_title="IAS 廣告成效儀表板 v1.1.1")
 
-__version__ = "v1.1.0"
+__version__ = "v1.1.1"
 
 # --- GLOBAL UTILS (Moved from sidebar) --- SECURITY CHECK ---
 def check_password():
@@ -198,9 +198,33 @@ with st.sidebar:
     
     st.sidebar.header("📂 資料載入 (Data Loading)")
 with st.sidebar.expander("詳細篩選 (Filters)", expanded=True):
-    suppliers = st.multiselect("供應商名稱 (依流量排序)", options=sorted_suppliers)
-    hours = st.multiselect("小時 (Hour)", options=sorted(df['小時'].unique(), key=lambda x: int(x) if str(x).isdigit() else 99))
-    sites = st.multiselect("網站名稱 (依流量排序)", options=sorted_sites)
+    # 供應商篩選
+    c1, c2 = st.columns([4, 1.5])
+    with c1:
+        suppliers = st.multiselect("供應商名稱", options=sorted_suppliers, help="留空代表全選 (All)")
+    with c2:
+        st.write("") # Spacer
+        st.write("")
+        supp_exclude = st.checkbox("排除", key="supp_exc", help="勾選後變為「排除模式」：顯示除了選中項目以外的所有供應商")
+    
+    # 小時篩選
+    c_h1, c_h2 = st.columns([4, 1.5])
+    with c_h1:
+        hours = st.multiselect("小時 (Hour)", options=sorted(df['小時'].unique(), key=lambda x: int(x) if str(x).isdigit() else 99), help="留空代表全選 (All)")
+    with c_h2:
+        st.write("") 
+        st.write("")
+        hour_exclude = st.checkbox("排除", key="hour_exc", help="勾選後變為「排除模式」：顯示除了選中時段以外的所有資料")
+    
+    # 網站篩選
+    c3, c4 = st.columns([4, 1.5])
+    with c3:
+        sites = st.multiselect("網站名稱", options=sorted_sites, help="留空代表全選 (All)")
+    with c4:
+        st.write("") 
+        st.write("")
+        site_exclude = st.checkbox("排除", key="site_exc", help="勾選後變為「排除模式」：顯示除了選中項目以外的所有網站")
+
     subnetwork_opts = st.multiselect("子聯播網", options=['子聯播網', '非子聯播網'])
     antifraud_opts = st.multiselect("Antifroud (違規檢查)", options=['Antifraud (違規)', 'Clean (正常)'])
     famous_opts = st.multiselect("知名媒體篩選", options=['知名媒體', '非知名媒體'])
@@ -240,11 +264,30 @@ with st.sidebar.expander("歸戶預覽 (Normalization)", expanded=False):
             )
             st.success(f"完成！共 {len(df_norm)} 筆網站數據")
 
-# Filter Logic
+# Filter Logic (Update for Exclude Mode)
 mask = pd.Series([True] * len(df))
-if suppliers: mask &= df['供應商名稱'].isin(suppliers)
-if hours: mask &= df['小時'].astype(str).isin([str(h) for h in hours])
-if sites: mask &= df['網站名稱'].isin(sites)
+
+# 供應商邏輯
+if suppliers: 
+    if supp_exclude:
+        mask &= ~df['供應商名稱'].isin(suppliers)
+    else:
+        mask &= df['供應商名稱'].isin(suppliers)
+
+# 小時邏輯
+if hours: 
+    target_hours = [str(h) for h in hours]
+    if hour_exclude:
+        mask &= ~df['小時'].astype(str).isin(target_hours)
+    else:
+        mask &= df['小時'].astype(str).isin(target_hours)
+
+# 網站邏輯
+if sites:
+    if site_exclude:
+        mask &= ~df['網站名稱'].isin(sites)
+    else:
+        mask &= df['網站名稱'].isin(sites)
 
 if subnetwork_opts:
     is_sn = (df['子聯播網'] == '子聯播網')
@@ -366,9 +409,28 @@ def show_sub_report(file_path, title_prefix):
             
             # --- 套用側邊欄全域篩選條件 ---
             g_mask = pd.Series([True] * len(df_full))
-            if 'suppliers' in globals() and suppliers: g_mask &= df_full['供應商名稱'].isin(suppliers)
-            if 'hours' in globals() and hours: g_mask &= df_full['小時'].astype(str).isin([str(h) for h in hours])
-            if 'sites' in globals() and sites: g_mask &= df_full['網站名稱'].isin(sites)
+            
+            # 供應商
+            if 'suppliers' in globals() and suppliers: 
+                if 'supp_exclude' in globals() and supp_exclude:
+                    g_mask &= ~df_full['供應商名稱'].isin(suppliers)
+                else:
+                    g_mask &= df_full['供應商名稱'].isin(suppliers)
+            
+            # 小時
+            if 'hours' in globals() and hours: 
+                target_hours = [str(h) for h in hours]
+                if 'hour_exclude' in globals() and hour_exclude:
+                    g_mask &= ~df_full['小時'].astype(str).isin(target_hours)
+                else:
+                    g_mask &= df_full['小時'].astype(str).isin(target_hours)
+            
+            # 網站
+            if 'sites' in globals() and sites: 
+                if 'site_exclude' in globals() and site_exclude:
+                    g_mask &= ~df_full['網站名稱'].isin(sites)
+                else:
+                    g_mask &= df_full['網站名稱'].isin(sites)
             
             # 套用進階標籤篩選 (如果該報表有這些欄位)
             if 'subnetwork_opts' in globals() and subnetwork_opts and '子聯播網' in df_full.columns:
