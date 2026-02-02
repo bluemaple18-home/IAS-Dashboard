@@ -73,4 +73,4 @@ def analyze_bs_logic(file_path):
         print(f"❌ 分析失敗: {e}")
 
 if __name__ == "__main__":
-    analyze_bs_logic('/Users/mattkuo/Downloads/sample-Brand-Suitability_20260125-20260126.xlsx')
+    analyze_bs_logic('/Users/matt/Downloads/sample-Brand-Suitability_20260125-20260126.xlsx')

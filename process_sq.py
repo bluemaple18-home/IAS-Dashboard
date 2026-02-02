@@ -63,5 +63,5 @@ def process_sq_hourly(input_path):
         return None
 
 if __name__ == "__main__":
-    path = '/Users/mattkuo/Downloads/sample-Site-Quality_20260125-20260126.xlsx'
+    path = '/Users/matt/Downloads/sample-Site-Quality_20260125-20260126.xlsx'
     process_sq_hourly(path)

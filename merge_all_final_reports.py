@@ -5,7 +5,7 @@ import functools
 import glob
 
 def merge_all_reports():
-    source_dir = "/Users/mattkuo/Downloads"
+    source_dir = "/Users/matt/Downloads"
     # Find raw files (disguised as .csv or .xlsx)
     # We will look for sample*_final_integrated.* and prefer the latest ones
     

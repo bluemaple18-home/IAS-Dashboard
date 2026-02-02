@@ -209,6 +209,6 @@ def merge_reports(hourly_path, ssp_path, antifraud_path=None, famous_path=None, 
         return None
 
 if __name__ == "__main__":
-    hourly = "/Users/mattkuo/Downloads/sample-Viewability_20260125-20260126_hourly_report.xlsx"
-    ssp = "/Users/mattkuo/Downloads/SSP_2026-01-26_2026-01-27_(一般媒體).xlsx"
+    hourly = "/Users/matt/Downloads/sample-Viewability_20260125-20260126_hourly_report.xlsx"
+    ssp = "/Users/matt/Downloads/SSP_2026-01-26_2026-01-27_(一般媒體).xlsx"
     merge_reports(hourly, ssp)

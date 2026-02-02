@@ -15,5 +15,5 @@ def inspect_excel(file_path):
         print(f"錯誤: {e}")
 
 if __name__ == "__main__":
-    path = "/Users/mattkuo/Downloads/sample-Viewability_20260125-20260126.xlsx"
+    path = "/Users/matt/Downloads/sample-Viewability_20260125-20260126.xlsx"
     inspect_excel(path)

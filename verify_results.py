@@ -21,5 +21,5 @@ def verify_results(file_path):
         print(f"❌ 驗證時發生錯誤: {e}")
 
 if __name__ == "__main__":
-    path = "/Users/mattkuo/Downloads/sample-Viewability_20260125-20260126_processed.xlsx"
+    path = "/Users/matt/Downloads/sample-Viewability_20260125-20260126_processed.xlsx"
     verify_results(path)

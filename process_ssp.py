@@ -62,5 +62,5 @@ def process_ssp(input_path):
         return None
 
 if __name__ == "__main__":
-    file_path = "/Users/mattkuo/Downloads/SSP_2026-01-26_2026-01-27_(一般媒體).xlsx"
+    file_path = "/Users/matt/Downloads/SSP_2026-01-26_2026-01-27_(一般媒體).xlsx"
     process_ssp(file_path)

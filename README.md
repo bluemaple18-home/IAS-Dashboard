@@ -10,8 +10,8 @@
 
 ## 環境啟動
 ```bash
-cd /Users/mattkuo/Projects/excel-1m-processor
-source venv/bin/activate
+cd /Users/matt/IAS-Dashboard
+source .venv/bin/activate
 ```
 
 ## 使用說明

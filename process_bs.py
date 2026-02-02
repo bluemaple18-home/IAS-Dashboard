@@ -61,5 +61,5 @@ def process_bs_hourly(input_path):
         return None
 
 if __name__ == "__main__":
-    path = '/Users/mattkuo/Downloads/sample-Brand-Suitability_20260125-20260126.xlsx'
+    path = '/Users/matt/Downloads/sample-Brand-Suitability_20260125-20260126.xlsx'
     process_bs_hourly(path)

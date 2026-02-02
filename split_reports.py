@@ -7,7 +7,7 @@ from format_reports import format_excel
 
 def split_and_format():
     # Find all 5 integrated reports
-    source_dir = "/Users/mattkuo/Downloads"
+    source_dir = "/Users/matt/Downloads"
     patterns = ["01_*.xlsx", "02_*.xlsx", "03_*.xlsx", "04_*.xlsx", "05_*.xlsx"]
     
     files_to_process = []

@@ -13,5 +13,5 @@ def inspect_ssp(file_path):
         print(f"❌ 錯誤: {e}")
 
 if __name__ == "__main__":
-    path = "/Users/mattkuo/Downloads/SSP_2026-01-26_2026-01-27_(一般媒體).xlsx"
+    path = "/Users/matt/Downloads/SSP_2026-01-26_2026-01-27_(一般媒體).xlsx"
     inspect_ssp(path)

@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 def verify_consistency():
-    source_dir = "/Users/mattkuo/Downloads"
+    source_dir = "/Users/matt/Downloads"
     files = {
         'Viewability': '01_可視性廣告整合報表_版位級別.csv',
         'IVT': '02_無效流量整合報表_版位級別.csv',

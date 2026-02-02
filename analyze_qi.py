@@ -50,4 +50,4 @@ def analyze_qi_logic(file_path):
         print(f"❌ 分析失敗: {e}")
 
 if __name__ == "__main__":
-    analyze_qi_logic('/Users/mattkuo/Downloads/sample--Quality-Impressions_20260125-20260126.xlsx')
+    analyze_qi_logic('/Users/matt/Downloads/sample--Quality-Impressions_20260125-20260126.xlsx')

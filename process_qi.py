@@ -53,5 +53,5 @@ def process_qi_hourly(input_path):
         return None
 
 if __name__ == "__main__":
-    path = '/Users/mattkuo/Downloads/sample--Quality-Impressions_20260125-20260126.xlsx'
+    path = '/Users/matt/Downloads/sample--Quality-Impressions_20260125-20260126.xlsx'
     process_qi_hourly(path)

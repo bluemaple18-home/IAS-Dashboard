@@ -4,7 +4,7 @@ import glob
 
 def convert_to_csv():
     # Find all *_final_integrated.* files
-    source_dir = "/Users/mattkuo/Downloads"
+    source_dir = "/Users/matt/Downloads"
     # Target specific integrated files (both xlsx and csv)
     patterns = ["*_final_integrated.xlsx", "*_final_integrated.csv"]
     

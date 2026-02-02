@@ -9,10 +9,10 @@ from aggregate_to_website import aggregate_to_website
 
 def run_pipeline():
     # Configuration
-    ssp_path = '/Users/mattkuo/Downloads/SSP_2026-01-26_2026-01-27_(一般媒體)_processed.xlsx'
-    antifraud_path = '/Users/mattkuo/Downloads/abnormal_weekly_processed_v12.xlsx'
-    famous_path = '/Users/mattkuo/Downloads/SSP_2025-12-01_2026-01-28_(一般媒體).xlsx'
-    subnetwork_path = '/Users/mattkuo/Downloads/SSP_2025-12-01_2026-01-29_(一般媒體).xlsx'
+    ssp_path = '/Users/matt/Downloads/SSP_2026-01-26_2026-01-27_(一般媒體)_processed.xlsx'
+    antifraud_path = '/Users/matt/Downloads/abnormal_weekly_processed_v12.xlsx'
+    famous_path = '/Users/matt/Downloads/SSP_2025-12-01_2026-01-28_(一般媒體).xlsx'
+    subnetwork_path = '/Users/matt/Downloads/SSP_2025-12-01_2026-01-29_(一般媒體).xlsx'
     
     # Target files mapping (Keyword -> Processor)
     # Added Invalid-Traffic back to list as user said "Output 5 files"
@@ -25,7 +25,7 @@ def run_pipeline():
         'Invalid-Traffic': process_ivt_hourly
     }
     
-    source_dir = "/Users/mattkuo/Downloads"
+    source_dir = "/Users/matt/Downloads"
     
     for key, processor in targets.items():
         print(f"\nExample Pattern: *{key}*_20260125-20260128.xlsx")

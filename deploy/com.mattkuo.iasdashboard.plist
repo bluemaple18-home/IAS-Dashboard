@@ -9,11 +9,11 @@
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>cd /Users/mattkuo/Projects/excel-1m-processor; source venv/bin/activate; exec streamlit run dashboard_app.py --server.headless true --server.port 8502 --server.address 0.0.0.0</string>
+        <string>cd /Users/matt/IAS-Dashboard; source .venv/bin/activate; exec streamlit run dashboard_app.py --server.headless true --server.port 8502 --server.address 0.0.0.0</string>
     </array>
     
     <key>WorkingDirectory</key>
-    <string>/Users/mattkuo/Projects/excel-1m-processor</string>
+    <string>/Users/matt/IAS-Dashboard</string>
     
     <key>RunAtLoad</key>
     <true/>
@@ -22,17 +22,17 @@
     <true/>
     
     <key>StandardOutPath</key>
-    <string>/Users/mattkuo/Projects/excel-1m-processor/streamlit.log</string>
+    <string>/Users/matt/IAS-Dashboard/streamlit.log</string>
     
     <key>StandardErrorPath</key>
-    <string>/Users/mattkuo/Projects/excel-1m-processor/streamlit.log</string>
+    <string>/Users/matt/IAS-Dashboard/streamlit.log</string>
     
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
         <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
         <key>PYTHONPATH</key>
-        <string>/Users/mattkuo/Projects/excel-1m-processor</string>
+        <string>/Users/matt/IAS-Dashboard</string>
     </dict>
 </dict>
 </plist>

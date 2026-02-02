@@ -2,11 +2,11 @@ import openpyxl
 import os
 
 target_files = [
-    "/Users/mattkuo/Downloads/01_可視性廣告整合報表.xlsx",
-    "/Users/mattkuo/Downloads/02_無效流量整合報表.xlsx",
-    "/Users/mattkuo/Downloads/03_網站品質整合報表.xlsx",
-    "/Users/mattkuo/Downloads/04_品牌適合度整合報表.xlsx",
-    "/Users/mattkuo/Downloads/05_優質曝光整合報表.xlsx"
+    "/Users/matt/Downloads/01_可視性廣告整合報表.xlsx",
+    "/Users/matt/Downloads/02_無效流量整合報表.xlsx",
+    "/Users/matt/Downloads/03_網站品質整合報表.xlsx",
+    "/Users/matt/Downloads/04_品牌適合度整合報表.xlsx",
+    "/Users/matt/Downloads/05_優質曝光整合報表.xlsx"
 ]
 
 def format_excel(file_path):
