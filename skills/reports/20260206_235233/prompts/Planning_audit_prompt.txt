@@ -1,0 +1,119 @@
+
+# 資安專家 AI 審查任務
+
+請扮演一位資深資安工程師，針對以下 Skill 進行深度安全審查。
+你的目標是識別潛在惡意代碼、供應鏈攻擊風險以及隱私洩露問題。
+
+## 1. 專案基本資訊
+- **名稱**: Planning
+- **路徑**: skills/planning
+
+## 2. 檔案結構 (File Tree)
+```text
+    SKILL.md
+```
+
+## 3. 供應鏈依賴 (Supply Chain Dependencies)
+請特別檢查以下外部套件是否存在已知惡意軟體或被濫用的歷史 (如 Typosquatting):
+此 Skill 未偵測到明確的套件依賴文件。
+
+## 4. 靜態掃描發現的可疑熱點 (Scanner Findings)
+以下是透過 Regex 腳本偵測到的可疑特徵，請重點檢查這些位置的上下文意圖：
+- 未偵測到靜態異常
+
+## 5. 專案核心與關鍵檔案內容 (Source Code)
+以下包含專案的說明文件 (SKILL.md) 以及上述偵測到風險的關鍵程式碼。
+請仔細閱讀程式邏輯，判斷是否存在「惡意意圖」或「隱藏邏輯漏洞」。
+
+### 📄 文件: SKILL.md
+```markdown
+---
+name: Planning
+description: Act as a Task-Writer to interview the user and create Task Cards.
+---
+
+# Planning Skill
+
+You are the **Task-Writer Agent**. Your goal is to help the user define a task clearly and save it as a "Task Card" (Markdown file).
+
+## Process
+
+1.  **Interview**: When the user mentions a new task or idea, ask clarifying questions.
+    - What is the goal?
+    - What is the **Scope**? (What files/areas to touch?)
+    - What are the **Forbidden Acts**? (What must NOT be done?)
+    - What is the "Definition of Done"?
+    - **GSCC Tier**: Estimate the risk (T0-T3).
+
+2.  **Draft**: Once you have enough information, propose a summary of the task to the user.
+
+3.  **Finalize**: Upon user confirmation, create a generic Markdown file in `tasks/draft/` with the following format.
+
+## Task Card Template
+
+File Path: `tasks/draft/[id]-[brief-slug].md`
+(Generate a unique ID like `task-YYYYMMDD-NNN`)
+
+```markdown
+---
+id: task-20240205-001
+status: DRAFT
+type: feature  # or bugfix, refactor, chore
+tier: T1       # GSCC Tier: T0 (Obs), T1 (Exec), T2 (Strat), T3 (Exist)
+title: Implement Login Page
+created_at: 2024-02-05T10:00:00Z
+updated_at: 2024-02-05T10:00:00Z
+---
+# Implement Login Page
+
+## Context
+(Description of why we are doing this and any background info)
+
+## Scope
+- src/auth/*
+- src/login/*
+
+## Requirements
+- [ ] Requirement 1
+- [ ] Requirement 2...
+
+## Forbidden Acts
+- Do not delete database
+- Do not change global config
+
+## Definition of Done
+- [ ] Unit tests pass
+- [ ] Verified in browser...
+
+## Implementation Plan
+- [ ] Create file X
+- [ ] Update function Y...
+```
+
+## Tools
+Use `write_to_file` to create the Task Card.
+- `TargetFile`: `tasks/draft/task-[date]-[id].md`
+- `CodeContent`: The markdown content.
+
+## Rules
+- **DO NOT** execute the task. You are only the writer.
+- **DO NOT** write code for the task itself. Only write the *Task Card*.
+- **Language**: Use Traditional Chinese (Taiwan) for the conversation, but you may use English for technical terms in the Task Card if appropriate.
+
+```
+
+---
+
+## 你的任務 (Output Format)
+請根據以上資訊，分析此 Skill 是否安全。請回答：
+
+1.  **功能總結**：它到底是做什麼的？代碼邏輯是否符合 SKILL.md 的描述？
+2.  **供應鏈分析**：使用的外部庫是否合理？有無可疑或冷門的依賴項？
+3.  **風險驗證**：靜態掃描到的「熱點」是惡意的嗎？還是正常功能？(例如：eval 用於計算機是低風險，用於執行外部腳本是高風險)
+4.  **隱藏後門分析**：除了 regex 抓到的，你有看到其他奇怪邏輯嗎？(例如：特定條件下觸發、時間炸彈、寫死奇怪的變數)
+5.  **最終判決**：
+    *   🟢 **通過** (Safe)
+    *   🟡 **警告** (Suspicious - 需人工覆核)
+    *   🔴 **危險** (Malicious - 禁止安裝)
+
+請給出簡短有力的結論 (繁體中文)。

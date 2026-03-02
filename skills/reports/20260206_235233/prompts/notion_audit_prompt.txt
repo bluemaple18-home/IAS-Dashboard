@@ -1,0 +1,230 @@
+
+# 資安專家 AI 審查任務
+
+請扮演一位資深資安工程師，針對以下 Skill 進行深度安全審查。
+你的目標是識別潛在惡意代碼、供應鏈攻擊風險以及隱私洩露問題。
+
+## 1. 專案基本資訊
+- **名稱**: notion
+- **路徑**: skills/notion
+
+## 2. 檔案結構 (File Tree)
+```text
+    SKILL.md
+```
+
+## 3. 供應鏈依賴 (Supply Chain Dependencies)
+請特別檢查以下外部套件是否存在已知惡意軟體或被濫用的歷史 (如 Typosquatting):
+此 Skill 未偵測到明確的套件依賴文件。
+
+## 4. 靜態掃描發現的可疑熱點 (Scanner Findings)
+以下是透過 Regex 腳本偵測到的可疑特徵，請重點檢查這些位置的上下文意圖：
+- https://...
+- https://api.notion.com/v1/...
+- https://api.notion.com/v1/blocks/{page_id}/children
+- https://api.notion.com/v1/data_sources
+- https://api.notion.com/v1/data_sources/{data_source_id}/query
+- https://api.notion.com/v1/pages
+- https://api.notion.com/v1/pages/{page_id}
+- https://api.notion.com/v1/search
+- https://developers.notion.com
+- https://notion.so/my-integrations
+- 反除錯/反沙盒 (Sleep/UserInteraction)：skills/notion/SKILL.md
+- 硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/notion/SKILL.md
+
+## 5. 專案核心與關鍵檔案內容 (Source Code)
+以下包含專案的說明文件 (SKILL.md) 以及上述偵測到風險的關鍵程式碼。
+請仔細閱讀程式邏輯，判斷是否存在「惡意意圖」或「隱藏邏輯漏洞」。
+
+### 📄 文件: SKILL.md
+```markdown
+---
+name: notion
+description: Notion API for creating and managing pages, databases, and blocks.
+homepage: https://developers.notion.com
+metadata:
+  {
+    "openclaw":
+      { "emoji": "📝", "requires": { "env": ["NOTION_API_KEY"] }, "primaryEnv": "NOTION_API_KEY" },
+  }
+---
+
+# notion
+
+Use the Notion API to create/read/update pages, data sources (databases), and blocks.
+
+## Setup
+
+1. Create an integration at https://notion.so/my-integrations
+2. Copy the API key (starts with `ntn_` or `secret_`)
+3. Store it:
+
+```bash
+mkdir -p ~/.config/notion
+echo "ntn_your_key_here" > ~/.config/notion/api_key
+```
+
+4. Share target pages/databases with your integration (click "..." → "Connect to" → your integration name)
+
+## API Basics
+
+All requests need:
+
+```bash
+NOTION_KEY=$(cat ~/.config/notion/api_key)
+curl -X GET "https://api.notion.com/v1/..." \
+  -H "Authorization: Bearer $NOTION_KEY" \
+  -H "Notion-Version: 2025-09-03" \
+  -H "Content-Type: application/json"
+```
+
+> **Note:** The `Notion-Version` header is required. This skill uses `2025-09-03` (latest). In this version, databases are called "data sources" in the API.
+
+## Common Operations
+
+**Search for pages and data sources:**
+
+```bash
+curl -X POST "https://api.notion.com/v1/search" \
+  -H "Authorization: Bearer $NOTION_KEY" \
+  -H "Notion-Version: 2025-09-03" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "page title"}'
+```
+
+**Get page:**
+
+```bash
+curl "https://api.notion.com/v1/pages/{page_id}" \
+  -H "Authorization: Bearer $NOTION_KEY" \
+  -H "Notion-Version: 2025-09-03"
+```
+
+**Get page content (blocks):**
+
+```bash
+curl "https://api.notion.com/v1/blocks/{page_id}/children" \
+  -H "Authorization: Bearer $NOTION_KEY" \
+  -H "Notion-Version: 2025-09-03"
+```
+
+**Create page in a data source:**
+
+```bash
+curl -X POST "https://api.notion.com/v1/pages" \
+  -H "Authorization: Bearer $NOTION_KEY" \
+  -H "Notion-Version: 2025-09-03" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "parent": {"database_id": "xxx"},
+    "properties": {
+      "Name": {"title": [{"text": {"content": "New Item"}}]},
+      "Status": {"select": {"name": "Todo"}}
+    }
+  }'
+```
+
+**Query a data source (database):**
+
+```bash
+curl -X POST "https://api.notion.com/v1/data_sources/{data_source_id}/query" \
+  -H "Authorization: Bearer $NOTION_KEY" \
+  -H "Notion-Version: 2025-09-03" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filter": {"property": "Status", "select": {"equals": "Active"}},
+    "sorts": [{"property": "Date", "direction": "descending"}]
+  }'
+```
+
+**Create a data source (database):**
+
+```bash
+curl -X POST "https://api.notion.com/v1/data_sources" \
+  -H "Authorization: Bearer $NOTION_KEY" \
+  -H "Notion-Version: 2025-09-03" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "parent": {"page_id": "xxx"},
+    "title": [{"text": {"content": "My Database"}}],
+    "properties": {
+      "Name": {"title": {}},
+      "Status": {"select": {"options": [{"name": "Todo"}, {"name": "Done"}]}},
+      "Date": {"date": {}}
+    }
+  }'
+```
+
+**Update page properties:**
+
+```bash
+curl -X PATCH "https://api.notion.com/v1/pages/{page_id}" \
+  -H "Authorization: Bearer $NOTION_KEY" \
+  -H "Notion-Version: 2025-09-03" \
+  -H "Content-Type: application/json" \
+  -d '{"properties": {"Status": {"select": {"name": "Done"}}}}'
+```
+
+**Add blocks to page:**
+
+```bash
+curl -X PATCH "https://api.notion.com/v1/blocks/{page_id}/children" \
+  -H "Authorization: Bearer $NOTION_KEY" \
+  -H "Notion-Version: 2025-09-03" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "children": [
+      {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"text": {"content": "Hello"}}]}}
+    ]
+  }'
+```
+
+## Property Types
+
+Common property formats for database items:
+
+- **Title:** `{"title": [{"text": {"content": "..."}}]}`
+- **Rich text:** `{"rich_text": [{"text": {"content": "..."}}]}`
+- **Select:** `{"select": {"name": "Option"}}`
+- **Multi-select:** `{"multi_select": [{"name": "A"}, {"name": "B"}]}`
+- **Date:** `{"date": {"start": "2024-01-15", "end": "2024-01-16"}}`
+- **Checkbox:** `{"checkbox": true}`
+- **Number:** `{"number": 42}`
+- **URL:** `{"url": "https://..."}`
+- **Email:** `{"email": "a@b.com"}`
+- **Relation:** `{"relation": [{"id": "page_id"}]}`
+
+## Key Differences in 2025-09-03
+
+- **Databases → Data Sources:** Use `/data_sources/` endpoints for queries and retrieval
+- **Two IDs:** Each database now has both a `database_id` and a `data_source_id`
+  - Use `database_id` when creating pages (`parent: {"database_id": "..."}`)
+  - Use `data_source_id` when querying (`POST /v1/data_sources/{id}/query`)
+- **Search results:** Databases return as `"object": "data_source"` with their `data_source_id`
+- **Parent in responses:** Pages show `parent.data_source_id` alongside `parent.database_id`
+- **Finding the data_source_id:** Search for the database, or call `GET /v1/data_sources/{data_source_id}`
+
+## Notes
+
+- Page/database IDs are UUIDs (with or without dashes)
+- The API cannot set database view filters — that's UI-only
+- Rate limit: ~3 requests/second average
+- Use `is_inline: true` when creating data sources to embed them in pages
+
+```
+
+---
+
+## 你的任務 (Output Format)
+請根據以上資訊，分析此 Skill 是否安全。請回答：
+
+1.  **功能總結**：它到底是做什麼的？代碼邏輯是否符合 SKILL.md 的描述？
+2.  **供應鏈分析**：使用的外部庫是否合理？有無可疑或冷門的依賴項？
+3.  **風險驗證**：靜態掃描到的「熱點」是惡意的嗎？還是正常功能？(例如：eval 用於計算機是低風險，用於執行外部腳本是高風險)
+4.  **隱藏後門分析**：除了 regex 抓到的，你有看到其他奇怪邏輯嗎？(例如：特定條件下觸發、時間炸彈、寫死奇怪的變數)
+5.  **最終判決**：
+    *   🟢 **通過** (Safe)
+    *   🟡 **警告** (Suspicious - 需人工覆核)
+    *   🔴 **危險** (Malicious - 禁止安裝)
+
+請給出簡短有力的結論 (繁體中文)。

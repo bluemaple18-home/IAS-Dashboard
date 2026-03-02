@@ -18,7 +18,7 @@ fi
 # 2. Update Dependencies
 if [ -f "requirements.txt" ]; then
     echo "📦 Checking dependencies..."
-    source venv/bin/activate
+    source .venv/bin/activate
     pip install -r requirements.txt
 else
     echo "⚠️ No requirements.txt found."

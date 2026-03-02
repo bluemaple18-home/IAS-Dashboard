@@ -1,0 +1,100 @@
+
+# 資安專家 AI 審查任務
+
+請扮演一位資深資安工程師，針對以下 Skill 進行深度安全審查。
+你的目標是識別潛在惡意代碼、供應鏈攻擊風險以及隱私洩露問題。
+
+## 1. 專案基本資訊
+- **名稱**: goplaces
+- **路徑**: skills/goplaces
+
+## 2. 檔案結構 (File Tree)
+```text
+    SKILL.md
+```
+
+## 3. 供應鏈依賴 (Supply Chain Dependencies)
+請特別檢查以下外部套件是否存在已知惡意軟體或被濫用的歷史 (如 Typosquatting):
+此 Skill 未偵測到明確的套件依賴文件。
+
+## 4. 靜態掃描發現的可疑熱點 (Scanner Findings)
+以下是透過 Regex 腳本偵測到的可疑特徵，請重點檢查這些位置的上下文意圖：
+- https://github.com/steipete/goplaces
+- 硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/goplaces/SKILL.md
+
+## 5. 專案核心與關鍵檔案內容 (Source Code)
+以下包含專案的說明文件 (SKILL.md) 以及上述偵測到風險的關鍵程式碼。
+請仔細閱讀程式邏輯，判斷是否存在「惡意意圖」或「隱藏邏輯漏洞」。
+
+### 📄 文件: SKILL.md
+```markdown
+---
+name: goplaces
+description: Query Google Places API (New) via the goplaces CLI for text search, place details, resolve, and reviews. Use for human-friendly place lookup or JSON output for scripts.
+homepage: https://github.com/steipete/goplaces
+metadata:
+  {
+    "openclaw":
+      {
+        "emoji": "📍",
+        "requires": { "bins": ["goplaces"], "env": ["GOOGLE_PLACES_API_KEY"] },
+        "primaryEnv": "GOOGLE_PLACES_API_KEY",
+        "install":
+          [
+            {
+              "id": "brew",
+              "kind": "brew",
+              "formula": "steipete/tap/goplaces",
+              "bins": ["goplaces"],
+              "label": "Install goplaces (brew)",
+            },
+          ],
+      },
+  }
+---
+
+# goplaces
+
+Modern Google Places API (New) CLI. Human output by default, `--json` for scripts.
+
+Install
+
+- Homebrew: `brew install steipete/tap/goplaces`
+
+Config
+
+- `GOOGLE_PLACES_API_KEY` required.
+- Optional: `GOOGLE_PLACES_BASE_URL` for testing/proxying.
+
+Common commands
+
+- Search: `goplaces search "coffee" --open-now --min-rating 4 --limit 5`
+- Bias: `goplaces search "pizza" --lat 40.8 --lng -73.9 --radius-m 3000`
+- Pagination: `goplaces search "pizza" --page-token "NEXT_PAGE_TOKEN"`
+- Resolve: `goplaces resolve "Soho, London" --limit 5`
+- Details: `goplaces details <place_id> --reviews`
+- JSON: `goplaces search "sushi" --json`
+
+Notes
+
+- `--no-color` or `NO_COLOR` disables ANSI color.
+- Price levels: 0..4 (free → very expensive).
+- Type filter sends only the first `--type` value (API accepts one).
+
+```
+
+---
+
+## 你的任務 (Output Format)
+請根據以上資訊，分析此 Skill 是否安全。請回答：
+
+1.  **功能總結**：它到底是做什麼的？代碼邏輯是否符合 SKILL.md 的描述？
+2.  **供應鏈分析**：使用的外部庫是否合理？有無可疑或冷門的依賴項？
+3.  **風險驗證**：靜態掃描到的「熱點」是惡意的嗎？還是正常功能？(例如：eval 用於計算機是低風險，用於執行外部腳本是高風險)
+4.  **隱藏後門分析**：除了 regex 抓到的，你有看到其他奇怪邏輯嗎？(例如：特定條件下觸發、時間炸彈、寫死奇怪的變數)
+5.  **最終判決**：
+    *   🟢 **通過** (Safe)
+    *   🟡 **警告** (Suspicious - 需人工覆核)
+    *   🔴 **危險** (Malicious - 禁止安裝)
+
+請給出簡短有力的結論 (繁體中文)。

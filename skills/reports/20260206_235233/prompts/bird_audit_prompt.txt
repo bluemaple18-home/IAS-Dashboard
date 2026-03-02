@@ -1,0 +1,273 @@
+
+# 資安專家 AI 審查任務
+
+請扮演一位資深資安工程師，針對以下 Skill 進行深度安全審查。
+你的目標是識別潛在惡意代碼、供應鏈攻擊風險以及隱私洩露問題。
+
+## 1. 專案基本資訊
+- **名稱**: bird
+- **路徑**: skills/bird
+
+## 2. 檔案結構 (File Tree)
+```text
+    SKILL.md
+```
+
+## 3. 供應鏈依賴 (Supply Chain Dependencies)
+請特別檢查以下外部套件是否存在已知惡意軟體或被濫用的歷史 (如 Typosquatting):
+此 Skill 未偵測到明確的套件依賴文件。
+
+## 4. 靜態掃描發現的可疑熱點 (Scanner Findings)
+以下是透過 Regex 腳本偵測到的可疑特徵，請重點檢查這些位置的上下文意圖：
+- https://bird.fast
+- 反除錯/反沙盒 (Sleep/UserInteraction)：skills/bird/SKILL.md
+- 硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/bird/SKILL.md
+
+## 5. 專案核心與關鍵檔案內容 (Source Code)
+以下包含專案的說明文件 (SKILL.md) 以及上述偵測到風險的關鍵程式碼。
+請仔細閱讀程式邏輯，判斷是否存在「惡意意圖」或「隱藏邏輯漏洞」。
+
+### 📄 文件: SKILL.md
+```markdown
+---
+name: bird
+description: X/Twitter CLI for reading, searching, posting, and engagement via cookies.
+homepage: https://bird.fast
+metadata:
+  {
+    "openclaw":
+      {
+        "emoji": "🐦",
+        "requires": { "bins": ["bird"] },
+        "install":
+          [
+            {
+              "id": "brew",
+              "kind": "brew",
+              "formula": "steipete/tap/bird",
+              "bins": ["bird"],
+              "label": "Install bird (brew)",
+              "os": ["darwin"],
+            },
+            {
+              "id": "npm",
+              "kind": "node",
+              "package": "@steipete/bird",
+              "bins": ["bird"],
+              "label": "Install bird (npm)",
+            },
+          ],
+      },
+  }
+---
+
+# bird 🐦
+
+Fast X/Twitter CLI using GraphQL + cookie auth.
+
+## Install
+
+```bash
+# npm/pnpm/bun
+npm install -g @steipete/bird
+
+# Homebrew (macOS, prebuilt binary)
+brew install steipete/tap/bird
+
+# One-shot (no install)
+bunx @steipete/bird whoami
+```
+
+## Authentication
+
+`bird` uses cookie-based auth.
+
+Use `--auth-token` / `--ct0` to pass cookies directly, or `--cookie-source` for browser cookies.
+
+Run `bird check` to see which source is active. For Arc/Brave, use `--chrome-profile-dir <path>`.
+
+## Commands
+
+### Account & Auth
+
+```bash
+bird whoami                    # Show logged-in account
+bird check                     # Show credential sources
+bird query-ids --fresh         # Refresh GraphQL query ID cache
+```
+
+### Reading Tweets
+
+```bash
+bird read <url-or-id>          # Read a single tweet
+bird <url-or-id>               # Shorthand for read
+bird thread <url-or-id>        # Full conversation thread
+bird replies <url-or-id>       # List replies to a tweet
+```
+
+### Timelines
+
+```bash
+bird home                      # Home timeline (For You)
+bird home --following          # Following timeline
+bird user-tweets @handle -n 20 # User's profile timeline
+bird mentions                  # Tweets mentioning you
+bird mentions --user @handle   # Mentions of another user
+```
+
+### Search
+
+```bash
+bird search "query" -n 10
+bird search "from:steipete" --all --max-pages 3
+```
+
+### News & Trending
+
+```bash
+bird news -n 10                # AI-curated from Explore tabs
+bird news --ai-only            # Filter to AI-curated only
+bird news --sports             # Sports tab
+bird news --with-tweets        # Include related tweets
+bird trending                  # Alias for news
+```
+
+### Lists
+
+```bash
+bird lists                     # Your lists
+bird lists --member-of         # Lists you're a member of
+bird list-timeline <id> -n 20  # Tweets from a list
+```
+
+### Bookmarks & Likes
+
+```bash
+bird bookmarks -n 10
+bird bookmarks --folder-id <id>           # Specific folder
+bird bookmarks --include-parent           # Include parent tweet
+bird bookmarks --author-chain             # Author's self-reply chain
+bird bookmarks --full-chain-only          # Full reply chain
+bird unbookmark <url-or-id>
+bird likes -n 10
+```
+
+### Social Graph
+
+```bash
+bird following -n 20           # Users you follow
+bird followers -n 20           # Users following you
+bird following --user <id>     # Another user's following
+bird about @handle             # Account origin/location info
+```
+
+### Engagement Actions
+
+```bash
+bird follow @handle            # Follow a user
+bird unfollow @handle          # Unfollow a user
+```
+
+### Posting
+
+```bash
+bird tweet "hello world"
+bird reply <url-or-id> "nice thread!"
+bird tweet "check this out" --media image.png --alt "description"
+```
+
+**⚠️ Posting risks**: Posting is more likely to be rate limited; if blocked, use the browser tool instead.
+
+## Media Uploads
+
+```bash
+bird tweet "hi" --media img.png --alt "description"
+bird tweet "pics" --media a.jpg --media b.jpg  # Up to 4 images
+bird tweet "video" --media clip.mp4            # Or 1 video
+```
+
+## Pagination
+
+Commands supporting pagination: `replies`, `thread`, `search`, `bookmarks`, `likes`, `list-timeline`, `following`, `followers`, `user-tweets`
+
+```bash
+bird bookmarks --all                    # Fetch all pages
+bird bookmarks --max-pages 3            # Limit pages
+bird bookmarks --cursor <cursor>        # Resume from cursor
+bird replies <id> --all --delay 1000    # Delay between pages (ms)
+```
+
+## Output Options
+
+```bash
+--json          # JSON output
+--json-full     # JSON with raw API response
+--plain         # No emoji, no color (script-friendly)
+--no-emoji      # Disable emoji
+--no-color      # Disable ANSI colors (or set NO_COLOR=1)
+--quote-depth n # Max quoted tweet depth in JSON (default: 1)
+```
+
+## Global Options
+
+```bash
+--auth-token <token>       # Set auth_token cookie
+--ct0 <token>              # Set ct0 cookie
+--cookie-source <source>   # Cookie source for browser cookies (repeatable)
+--chrome-profile <name>    # Chrome profile name
+--chrome-profile-dir <path> # Chrome/Chromium profile dir or cookie DB path
+--firefox-profile <name>   # Firefox profile
+--timeout <ms>             # Request timeout
+--cookie-timeout <ms>      # Cookie extraction timeout
+```
+
+## Config File
+
+`~/.config/bird/config.json5` (global) or `./.birdrc.json5` (project):
+
+```json5
+{
+  cookieSource: ["chrome"],
+  chromeProfileDir: "/path/to/Arc/Profile",
+  timeoutMs: 20000,
+  quoteDepth: 1,
+}
+```
+
+Environment variables: `BIRD_TIMEOUT_MS`, `BIRD_COOKIE_TIMEOUT_MS`, `BIRD_QUOTE_DEPTH`
+
+## Troubleshooting
+
+### Query IDs stale (404 errors)
+
+```bash
+bird query-ids --fresh
+```
+
+### Cookie extraction fails
+
+- Check browser is logged into X
+- Try different `--cookie-source`
+- For Arc/Brave: use `--chrome-profile-dir`
+
+---
+
+**TL;DR**: Read/search/engage with CLI. Post carefully or use browser. 🐦
+
+```
+
+---
+
+## 你的任務 (Output Format)
+請根據以上資訊，分析此 Skill 是否安全。請回答：
+
+1.  **功能總結**：它到底是做什麼的？代碼邏輯是否符合 SKILL.md 的描述？
+2.  **供應鏈分析**：使用的外部庫是否合理？有無可疑或冷門的依賴項？
+3.  **風險驗證**：靜態掃描到的「熱點」是惡意的嗎？還是正常功能？(例如：eval 用於計算機是低風險，用於執行外部腳本是高風險)
+4.  **隱藏後門分析**：除了 regex 抓到的，你有看到其他奇怪邏輯嗎？(例如：特定條件下觸發、時間炸彈、寫死奇怪的變數)
+5.  **最終判決**：
+    *   🟢 **通過** (Safe)
+    *   🟡 **警告** (Suspicious - 需人工覆核)
+    *   🔴 **危險** (Malicious - 禁止安裝)
+
+請給出簡短有力的結論 (繁體中文)。

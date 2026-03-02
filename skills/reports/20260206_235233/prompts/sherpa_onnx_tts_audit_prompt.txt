@@ -1,0 +1,155 @@
+
+# 資安專家 AI 審查任務
+
+請扮演一位資深資安工程師，針對以下 Skill 進行深度安全審查。
+你的目標是識別潛在惡意代碼、供應鏈攻擊風險以及隱私洩露問題。
+
+## 1. 專案基本資訊
+- **名稱**: sherpa-onnx-tts
+- **路徑**: skills/sherpa-onnx-tts
+
+## 2. 檔案結構 (File Tree)
+```text
+    SKILL.md
+    bin/
+        sherpa-onnx-tts
+```
+
+## 3. 供應鏈依賴 (Supply Chain Dependencies)
+請特別檢查以下外部套件是否存在已知惡意軟體或被濫用的歷史 (如 Typosquatting):
+此 Skill 未偵測到明確的套件依賴文件。
+
+## 4. 靜態掃描發現的可疑熱點 (Scanner Findings)
+以下是透過 Regex 腳本偵測到的可疑特徵，請重點檢查這些位置的上下文意圖：
+- https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-lessac-high.tar.bz2
+- https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-v1.12.23-linux-x64-shared.tar.bz2
+- https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-v1.12.23-osx-universal2-shared.tar.bz2
+- https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-v1.12.23-win-x64-shared.tar.bz2
+
+## 5. 專案核心與關鍵檔案內容 (Source Code)
+以下包含專案的說明文件 (SKILL.md) 以及上述偵測到風險的關鍵程式碼。
+請仔細閱讀程式邏輯，判斷是否存在「惡意意圖」或「隱藏邏輯漏洞」。
+
+### 📄 文件: SKILL.md
+```markdown
+---
+name: sherpa-onnx-tts
+description: Local text-to-speech via sherpa-onnx (offline, no cloud)
+metadata:
+  {
+    "openclaw":
+      {
+        "emoji": "🗣️",
+        "os": ["darwin", "linux", "win32"],
+        "requires": { "env": ["SHERPA_ONNX_RUNTIME_DIR", "SHERPA_ONNX_MODEL_DIR"] },
+        "install":
+          [
+            {
+              "id": "download-runtime-macos",
+              "kind": "download",
+              "os": ["darwin"],
+              "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-v1.12.23-osx-universal2-shared.tar.bz2",
+              "archive": "tar.bz2",
+              "extract": true,
+              "stripComponents": 1,
+              "targetDir": "~/.openclaw/tools/sherpa-onnx-tts/runtime",
+              "label": "Download sherpa-onnx runtime (macOS)",
+            },
+            {
+              "id": "download-runtime-linux-x64",
+              "kind": "download",
+              "os": ["linux"],
+              "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-v1.12.23-linux-x64-shared.tar.bz2",
+              "archive": "tar.bz2",
+              "extract": true,
+              "stripComponents": 1,
+              "targetDir": "~/.openclaw/tools/sherpa-onnx-tts/runtime",
+              "label": "Download sherpa-onnx runtime (Linux x64)",
+            },
+            {
+              "id": "download-runtime-win-x64",
+              "kind": "download",
+              "os": ["win32"],
+              "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-v1.12.23-win-x64-shared.tar.bz2",
+              "archive": "tar.bz2",
+              "extract": true,
+              "stripComponents": 1,
+              "targetDir": "~/.openclaw/tools/sherpa-onnx-tts/runtime",
+              "label": "Download sherpa-onnx runtime (Windows x64)",
+            },
+            {
+              "id": "download-model-lessac",
+              "kind": "download",
+              "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-lessac-high.tar.bz2",
+              "archive": "tar.bz2",
+              "extract": true,
+              "targetDir": "~/.openclaw/tools/sherpa-onnx-tts/models",
+              "label": "Download Piper en_US lessac (high)",
+            },
+          ],
+      },
+  }
+---
+
+# sherpa-onnx-tts
+
+Local TTS using the sherpa-onnx offline CLI.
+
+## Install
+
+1. Download the runtime for your OS (extracts into `~/.openclaw/tools/sherpa-onnx-tts/runtime`)
+2. Download a voice model (extracts into `~/.openclaw/tools/sherpa-onnx-tts/models`)
+
+Update `~/.openclaw/openclaw.json`:
+
+```json5
+{
+  skills: {
+    entries: {
+      "sherpa-onnx-tts": {
+        env: {
+          SHERPA_ONNX_RUNTIME_DIR: "~/.openclaw/tools/sherpa-onnx-tts/runtime",
+          SHERPA_ONNX_MODEL_DIR: "~/.openclaw/tools/sherpa-onnx-tts/models/vits-piper-en_US-lessac-high",
+        },
+      },
+    },
+  },
+}
+```
+
+The wrapper lives in this skill folder. Run it directly, or add the wrapper to PATH:
+
+```bash
+export PATH="{baseDir}/bin:$PATH"
+```
+
+## Usage
+
+```bash
+{baseDir}/bin/sherpa-onnx-tts -o ./tts.wav "Hello from local TTS."
+```
+
+Notes:
+
+- Pick a different model from the sherpa-onnx `tts-models` release if you want another voice.
+- If the model dir has multiple `.onnx` files, set `SHERPA_ONNX_MODEL_FILE` or pass `--model-file`.
+- You can also pass `--tokens-file` or `--data-dir` to override the defaults.
+- Windows: run `node {baseDir}\\bin\\sherpa-onnx-tts -o tts.wav "Hello from local TTS."`
+
+```
+
+---
+
+## 你的任務 (Output Format)
+請根據以上資訊，分析此 Skill 是否安全。請回答：
+
+1.  **功能總結**：它到底是做什麼的？代碼邏輯是否符合 SKILL.md 的描述？
+2.  **供應鏈分析**：使用的外部庫是否合理？有無可疑或冷門的依賴項？
+3.  **風險驗證**：靜態掃描到的「熱點」是惡意的嗎？還是正常功能？(例如：eval 用於計算機是低風險，用於執行外部腳本是高風險)
+4.  **隱藏後門分析**：除了 regex 抓到的，你有看到其他奇怪邏輯嗎？(例如：特定條件下觸發、時間炸彈、寫死奇怪的變數)
+5.  **最終判決**：
+    *   🟢 **通過** (Safe)
+    *   🟡 **警告** (Suspicious - 需人工覆核)
+    *   🔴 **危險** (Malicious - 禁止安裝)
+
+請給出簡短有力的結論 (繁體中文)。

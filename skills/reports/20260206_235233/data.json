@@ -1,0 +1,960 @@
+{
+  "generated_at": "2026-02-06 23:52:34",
+  "root": "/Users/matt/clawd",
+  "workspace_summary": {
+    "total": 53,
+    "high": 1,
+    "medium": 43,
+    "low": 9,
+    "security_score": 0
+  },
+  "items": [
+    {
+      "skill": "lobster",
+      "path": "extensions/lobster",
+      "summary": "功能分析：共掃描 6 個檔案。偵測到 5 項敏感操作、0 個外部連線、1 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "執行任意系統指令 (Shell/Subprocess)：extensions/lobster/src/lobster-tool.ts",
+        "存取環境變數 (Env Vars)：extensions/lobster/src/lobster-tool.ts",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：extensions/lobster/README.md",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：extensions/lobster/SKILL.md",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：extensions/lobster/src/lobster-tool.ts"
+      ],
+      "network_activity": [],
+      "obfuscation_signals": [
+        "反除錯/反沙盒 (Sleep/UserInteraction)：extensions/lobster/src/lobster-tool.ts"
+      ],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含任意系統指令執行 (Shell/Subprocess)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "prose",
+      "path": "extensions/open-prose/skills/prose",
+      "summary": "功能分析：共掃描 21 個檔案。偵測到 5 項敏感操作、13 個外部連線、3 個潛在混淆指標、3 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：extensions/open-prose/skills/prose/compiler.md",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：extensions/open-prose/skills/prose/lib/README.md",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：extensions/open-prose/skills/prose/state/filesystem.md",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：extensions/open-prose/skills/prose/state/postgres.md",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：extensions/open-prose/skills/prose/state/sqlite.md"
+      ],
+      "network_activity": [
+        "http://`",
+        "https://`",
+        "https://api.example.com",
+        "https://example.com/my-program.prose",
+        "https://p.prose.md/@alice/research",
+        "https://p.prose.md/@handle/slug`",
+        "https://p.prose.md/alice/code-review",
+        "https://p.prose.md/handle/slug`",
+        "https://p.prose.md/irl-danb/habit-miner",
+        "https://p.prose.md/{path}`",
+        "https://postgresapp.com",
+        "https://raw.githubusercontent.com/openprose/prose/main/skills/open-prose/examples/48-habit-miner.prose",
+        "https://www.prose.md"
+      ],
+      "obfuscation_signals": [
+        "反除錯/反沙盒 (Sleep/UserInteraction)：extensions/open-prose/skills/prose/compiler.md",
+        "反除錯/反沙盒 (Sleep/UserInteraction)：extensions/open-prose/skills/prose/prose.md",
+        "地區/時區規避偵測：extensions/open-prose/skills/prose/state/postgres.md"
+      ],
+      "package_installs": [
+        "apt-get install 安裝 (Linux)：extensions/open-prose/skills/prose/state/postgres.md",
+        "apt-get install 安裝 (Linux)：extensions/open-prose/skills/prose/state/sqlite.md",
+        "brew install 安裝 (macOS)：extensions/open-prose/skills/prose/state/postgres.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含地區/時區判斷邏輯 (可能為逃避偵測)； 包含大量外部連線 (13 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "1password",
+      "path": "skills/1password",
+      "summary": "功能分析：共掃描 3 個檔案。偵測到 2 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "加密貨幣錢包相關 (Wallet/Seed/Mnemonic)：skills/1password/references/cli-examples.md",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/1password/SKILL.md"
+      ],
+      "network_activity": [
+        "https://developer.1password.com/docs/cli/get-started/"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "high",
+      "reasoning": "偵測到加密貨幣錢包或私鑰存取路徑； 包含外部網路連線",
+      "recommendation": "⚠️ 高度危險：不建議在含真實憑證或資產的環境安裝！僅可在隔離 VM / 拋棄式沙盒中測試。",
+      "ai_audit": null
+    },
+    {
+      "skill": "apple-notes",
+      "path": "skills/apple-notes",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、2 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://github.com/antoniorodr/memo"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [
+        "brew install 安裝 (macOS)：skills/apple-notes/SKILL.md",
+        "pip install 安裝 (Python)：skills/apple-notes/SKILL.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "apple-reminders",
+      "path": "skills/apple-reminders",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、2 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://github.com/steipete/remindctl"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [
+        "brew install 安裝 (macOS)：skills/apple-reminders/SKILL.md",
+        "pnpm add 安裝 (Node.js)：skills/apple-reminders/SKILL.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "bear-notes",
+      "path": "skills/bear-notes",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、3 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/bear-notes/SKILL.md"
+      ],
+      "network_activity": [
+        "127.0.0.1",
+        "http://127.0.0.1:42123/success",
+        "https://bear.app"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "bird",
+      "path": "skills/bird",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、1 個外部連線、1 個潛在混淆指標、2 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/bird/SKILL.md"
+      ],
+      "network_activity": [
+        "https://bird.fast"
+      ],
+      "obfuscation_signals": [
+        "反除錯/反沙盒 (Sleep/UserInteraction)：skills/bird/SKILL.md"
+      ],
+      "package_installs": [
+        "brew install 安裝 (macOS)：skills/bird/SKILL.md",
+        "npm install 安裝 (Node.js)：skills/bird/SKILL.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "blogwatcher",
+      "path": "skills/blogwatcher",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、3 個外部連線、0 個潛在混淆指標、1 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://example.com`",
+        "https://github.com/Hyaxia/blogwatcher",
+        "https://xkcd.com"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [
+        "go get/install 安裝 (Go)：skills/blogwatcher/SKILL.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含大量外部連線 (3 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "blucli",
+      "path": "skills/blucli",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://blucli.sh"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "bluebubbles",
+      "path": "skills/bluebubbles",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、0 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "low",
+      "reasoning": "未偵測到明顯已知惡意特徵",
+      "recommendation": "✅ 相對安全：目前未發現明顯惡意特徵，但仍建議遵循最小權限原則使用。",
+      "ai_audit": null
+    },
+    {
+      "skill": "camsnap",
+      "path": "skills/camsnap",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、2 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "192.168.0.10",
+        "https://camsnap.ai"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "canvas",
+      "path": "skills/canvas",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、3 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "127.0.0.1",
+        "http://127.0.0.1:18793/__moltbot__/canvas/",
+        "http://peters-mac-studio-1.sheep-coho.ts.net:18793/__moltbot__/canvas/snake.html"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "clawhub",
+      "path": "skills/clawhub",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、1 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://clawhub.com"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [
+        "npm install 安裝 (Node.js)：skills/clawhub/SKILL.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "discord",
+      "path": "skills/discord",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、3 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/discord/SKILL.md"
+      ],
+      "network_activity": [
+        "https://...`",
+        "https://discord.com/channels/",
+        "https://discord.com/channels/999/123/456"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含大量外部連線 (3 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "eightctl",
+      "path": "skills/eightctl",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、1 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://eightctl.sh"
+      ],
+      "obfuscation_signals": [
+        "反除錯/反沙盒 (Sleep/UserInteraction)：skills/eightctl/SKILL.md"
+      ],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "food-order",
+      "path": "skills/food-order",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、2 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://ordercli.sh",
+        "https://www.foodora.at/"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "gemini",
+      "path": "skills/gemini",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://ai.google.dev/"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "gifgrep",
+      "path": "skills/gifgrep",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://gifgrep.com"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "github",
+      "path": "skills/github",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、0 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "low",
+      "reasoning": "未偵測到明顯已知惡意特徵",
+      "recommendation": "✅ 相對安全：目前未發現明顯惡意特徵，但仍建議遵循最小權限原則使用。",
+      "ai_audit": null
+    },
+    {
+      "skill": "gog",
+      "path": "skills/gog",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、1 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://gogcli.sh"
+      ],
+      "obfuscation_signals": [
+        "疑似混淆/編碼 (Base64/Hex/XOR)：skills/gog/SKILL.md"
+      ],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "代碼包含混淆或編碼跡象 (Base64/Hex)； 包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "goplaces",
+      "path": "skills/goplaces",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、1 個外部連線、0 個潛在混淆指標、1 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/goplaces/SKILL.md"
+      ],
+      "network_activity": [
+        "https://github.com/steipete/goplaces"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [
+        "brew install 安裝 (macOS)：skills/goplaces/SKILL.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "himalaya",
+      "path": "skills/himalaya",
+      "summary": "功能分析：共掃描 3 個檔案。偵測到 1 項敏感操作、3 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/himalaya/references/configuration.md"
+      ],
+      "network_activity": [
+        "https://github.com/pimalaya/himalaya",
+        "https://provider.com/oauth/authorize",
+        "https://provider.com/oauth/token"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含大量外部連線 (3 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "imsg",
+      "path": "skills/imsg",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://imsg.to"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "local-places",
+      "path": "skills/local-places",
+      "summary": "功能分析：共掃描 7 個檔案。偵測到 3 項敏感操作、10 個外部連線、0 個潛在混淆指標、2 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "存取環境變數 (Env Vars)：skills/local-places/src/local_places/google_places.py",
+        "存取環境變數 (Env Vars)：skills/local-places/src/local_places/main.py",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/local-places/src/local_places/google_places.py"
+      ],
+      "network_activity": [
+        "0.0.0.0",
+        "127.0.0.1",
+        "http://127.0.0.1:8000/docs.",
+        "http://127.0.0.1:8000/locations/resolve",
+        "http://127.0.0.1:8000/ping`",
+        "http://127.0.0.1:8000/places/search",
+        "http://127.0.0.1:8000/places/{place_id}",
+        "http://maxims-macbook-air:8000",
+        "https://github.com/Hyaxia/local_places",
+        "https://places.googleapis.com/v1"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [
+        "pip install 安裝 (Python)：skills/local-places/SERVER_README.md",
+        "pip install 安裝 (Python)：skills/local-places/SKILL.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含大量外部連線 (8 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "Management",
+      "path": "skills/management",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、0 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "low",
+      "reasoning": "未偵測到明顯已知惡意特徵",
+      "recommendation": "✅ 相對安全：目前未發現明顯惡意特徵，但仍建議遵循最小權限原則使用。",
+      "ai_audit": null
+    },
+    {
+      "skill": "mcporter",
+      "path": "skills/mcporter",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、3 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "http://mcporter.dev",
+        "https://api.example.com/mcp.fetch",
+        "https://example.com`"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含大量外部連線 (3 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "model-usage",
+      "path": "skills/model-usage",
+      "summary": "功能分析：共掃描 3 個檔案。偵測到 0 項敏感操作、0 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "low",
+      "reasoning": "未偵測到明顯已知惡意特徵",
+      "recommendation": "✅ 相對安全：目前未發現明顯惡意特徵，但仍建議遵循最小權限原則使用。",
+      "ai_audit": null
+    },
+    {
+      "skill": "nano-banana-pro",
+      "path": "skills/nano-banana-pro",
+      "summary": "功能分析：共掃描 2 個檔案。偵測到 3 項敏感操作、1 個外部連線、1 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "存取環境變數 (Env Vars)：skills/nano-banana-pro/scripts/generate_image.py",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/nano-banana-pro/SKILL.md",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/nano-banana-pro/scripts/generate_image.py"
+      ],
+      "network_activity": [
+        "https://ai.google.dev/"
+      ],
+      "obfuscation_signals": [
+        "疑似混淆/編碼 (Base64/Hex/XOR)：skills/nano-banana-pro/scripts/generate_image.py"
+      ],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "代碼包含混淆或編碼跡象 (Base64/Hex)； 包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "nano-pdf",
+      "path": "skills/nano-pdf",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://pypi.org/project/nano-pdf/"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "notion",
+      "path": "skills/notion",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、10 個外部連線、1 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/notion/SKILL.md"
+      ],
+      "network_activity": [
+        "https://...",
+        "https://api.notion.com/v1/...",
+        "https://api.notion.com/v1/blocks/{page_id}/children",
+        "https://api.notion.com/v1/data_sources",
+        "https://api.notion.com/v1/data_sources/{data_source_id}/query",
+        "https://api.notion.com/v1/pages",
+        "https://api.notion.com/v1/pages/{page_id}",
+        "https://api.notion.com/v1/search",
+        "https://developers.notion.com",
+        "https://notion.so/my-integrations"
+      ],
+      "obfuscation_signals": [
+        "反除錯/反沙盒 (Sleep/UserInteraction)：skills/notion/SKILL.md"
+      ],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含大量外部連線 (10 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "obsidian",
+      "path": "skills/obsidian",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "瀏覽器機敏資料 (Cookies/Passwords)：skills/obsidian/SKILL.md"
+      ],
+      "network_activity": [
+        "https://help.obsidian.md"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "嘗試存取瀏覽器敏感資料； 包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "openai-image-gen",
+      "path": "skills/openai-image-gen",
+      "summary": "功能分析：共掃描 2 個檔案。偵測到 2 項敏感操作、2 個外部連線、1 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "存取環境變數 (Env Vars)：skills/openai-image-gen/scripts/gen.py",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/openai-image-gen/scripts/gen.py"
+      ],
+      "network_activity": [
+        "https://api.openai.com/v1/images/generations",
+        "https://platform.openai.com/docs/api-reference/images"
+      ],
+      "obfuscation_signals": [
+        "疑似混淆/編碼 (Base64/Hex/XOR)：skills/openai-image-gen/scripts/gen.py"
+      ],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "代碼包含混淆或編碼跡象 (Base64/Hex)； 包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "openai-whisper",
+      "path": "skills/openai-whisper",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://openai.com/research/whisper"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "openai-whisper-api",
+      "path": "skills/openai-whisper-api",
+      "summary": "功能分析：共掃描 2 個檔案。偵測到 2 項敏感操作、2 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/openai-whisper-api/SKILL.md",
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/openai-whisper-api/scripts/transcribe.sh"
+      ],
+      "network_activity": [
+        "https://api.openai.com/v1/audio/transcriptions",
+        "https://platform.openai.com/docs/guides/speech-to-text"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "openhue",
+      "path": "skills/openhue",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://www.openhue.io/cli"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "oracle",
+      "path": "skills/oracle",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、2 個外部連線、0 個潛在混淆指標、1 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/oracle/SKILL.md"
+      ],
+      "network_activity": [
+        "0.0.0.0",
+        "https://askoracle.dev"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [
+        "npm install 安裝 (Node.js)：skills/oracle/SKILL.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "ordercli",
+      "path": "skills/ordercli",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、2 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "瀏覽器機敏資料 (Cookies/Passwords)：skills/ordercli/SKILL.md"
+      ],
+      "network_activity": [
+        "https://ordercli.sh",
+        "https://www.foodora.at/"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "嘗試存取瀏覽器敏感資料； 包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "peekaboo",
+      "path": "skills/peekaboo",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、2 個外部連線、1 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://example.com",
+        "https://peekaboo.boo"
+      ],
+      "obfuscation_signals": [
+        "反除錯/反沙盒 (Sleep/UserInteraction)：skills/peekaboo/SKILL.md"
+      ],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "Planning",
+      "path": "skills/planning",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、0 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "low",
+      "reasoning": "未偵測到明顯已知惡意特徵",
+      "recommendation": "✅ 相對安全：目前未發現明顯惡意特徵，但仍建議遵循最小權限原則使用。",
+      "ai_audit": null
+    },
+    {
+      "skill": "sag",
+      "path": "skills/sag",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://sag.sh"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "session-logs",
+      "path": "skills/session-logs",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、0 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "low",
+      "reasoning": "未偵測到明顯已知惡意特徵",
+      "recommendation": "✅ 相對安全：目前未發現明顯惡意特徵，但仍建議遵循最小權限原則使用。",
+      "ai_audit": null
+    },
+    {
+      "skill": "sherpa-onnx-tts",
+      "path": "skills/sherpa-onnx-tts",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、4 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-lessac-high.tar.bz2",
+        "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-v1.12.23-linux-x64-shared.tar.bz2",
+        "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-v1.12.23-osx-universal2-shared.tar.bz2",
+        "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-v1.12.23-win-x64-shared.tar.bz2"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含大量外部連線 (4 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "slack",
+      "path": "skills/slack",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、0 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/slack/SKILL.md"
+      ],
+      "network_activity": [],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "low",
+      "reasoning": "未偵測到明顯已知惡意特徵",
+      "recommendation": "✅ 相對安全：目前未發現明顯惡意特徵，但仍建議遵循最小權限原則使用。",
+      "ai_audit": null
+    },
+    {
+      "skill": "songsee",
+      "path": "skills/songsee",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://github.com/steipete/songsee"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "sonoscli",
+      "path": "skills/sonoscli",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/sonoscli/SKILL.md"
+      ],
+      "network_activity": [
+        "https://sonoscli.sh"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "spotify-player",
+      "path": "skills/spotify-player",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://www.spotify.com"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "things-mac",
+      "path": "skills/things-mac",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、1 個外部連線、0 個潛在混淆指標、1 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/things-mac/SKILL.md"
+      ],
+      "network_activity": [
+        "https://github.com/ossianhempel/things3-cli"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [
+        "go get/install 安裝 (Go)：skills/things-mac/SKILL.md"
+      ],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "tmux",
+      "path": "skills/tmux",
+      "summary": "功能分析：共掃描 3 個檔案。偵測到 0 項敏感操作、0 個外部連線、1 個潛在混淆指標、1 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [],
+      "obfuscation_signals": [
+        "反除錯/反沙盒 (Sleep/UserInteraction)：skills/tmux/scripts/wait-for-text.sh"
+      ],
+      "package_installs": [
+        "pnpm add 安裝 (Node.js)：skills/tmux/SKILL.md"
+      ],
+      "risk_level": "low",
+      "reasoning": "未偵測到明顯已知惡意特徵",
+      "recommendation": "✅ 相對安全：目前未發現明顯惡意特徵，但仍建議遵循最小權限原則使用。",
+      "ai_audit": null
+    },
+    {
+      "skill": "trello",
+      "path": "skills/trello",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、10 個外部連線、1 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/trello/SKILL.md"
+      ],
+      "network_activity": [
+        "https://api.trello.com/1/boards/{boardId}/cards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN",
+        "https://api.trello.com/1/boards/{boardId}/lists?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN",
+        "https://api.trello.com/1/cards/{cardId}/actions/comments?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN",
+        "https://api.trello.com/1/cards/{cardId}?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN",
+        "https://api.trello.com/1/cards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN",
+        "https://api.trello.com/1/lists/{listId}/cards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN",
+        "https://api.trello.com/1/members/me/boards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN",
+        "https://api.trello.com/1/members/me/boards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN&fields=name,id",
+        "https://developer.atlassian.com/cloud/trello/rest/",
+        "https://trello.com/app-key"
+      ],
+      "obfuscation_signals": [
+        "反除錯/反沙盒 (Sleep/UserInteraction)：skills/trello/SKILL.md"
+      ],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含大量外部連線 (10 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "video-frames",
+      "path": "skills/video-frames",
+      "summary": "功能分析：共掃描 2 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://ffmpeg.org"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "voice-call",
+      "path": "skills/voice-call",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 1 項敏感操作、0 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [
+        "硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/voice-call/SKILL.md"
+      ],
+      "network_activity": [],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "low",
+      "reasoning": "未偵測到明顯已知惡意特徵",
+      "recommendation": "✅ 相對安全：目前未發現明顯惡意特徵，但仍建議遵循最小權限原則使用。",
+      "ai_audit": null
+    },
+    {
+      "skill": "wacli",
+      "path": "skills/wacli",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、1 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://wacli.sh"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含外部網路連線",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    },
+    {
+      "skill": "weather",
+      "path": "skills/weather",
+      "summary": "功能分析：共掃描 1 個檔案。偵測到 0 項敏感操作、3 個外部連線、0 個潛在混淆指標、0 個套件安裝指令。",
+      "sensitive_behaviors": [],
+      "network_activity": [
+        "https://api.open-meteo.com/v1/forecast?latitude=51.5&longitude=-0.12&current_weather=true",
+        "https://open-meteo.com/en/docs",
+        "https://wttr.in/:help"
+      ],
+      "obfuscation_signals": [],
+      "package_installs": [],
+      "risk_level": "medium",
+      "reasoning": "包含大量外部連線 (3 個)",
+      "recommendation": "⚠️ 具可疑行為：建議僅在「隔離環境」或使用「小額測試錢包」進行測試，並檢查網路流量。",
+      "ai_audit": null
+    }
+  ]
+}

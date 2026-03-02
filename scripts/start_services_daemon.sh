@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Navigate to project dir
-PROJECT_DIR="/Users/mattkuo/Projects/excel-1m-processor"
+PROJECT_DIR="/Users/matt/IAS-Dashboard"
 cd "$PROJECT_DIR" || exit
 
 echo "🛑 Stopping existing Dashboard (Keep Tunnel alive if possible)..."
 pkill -f "streamlit run dashboard_app.py"
 
 echo "🚀 Starting Dashboard (Streamlit)..."
-source venv/bin/activate
+source .venv/bin/activate
 # Bind to 0.0.0.0 for LAN/External access
 nohup streamlit run dashboard_app.py --server.headless true --server.port 8502 --server.address 0.0.0.0 > streamlit.log 2>&1 &
 APP_PID=$!

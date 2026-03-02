@@ -1,0 +1,499 @@
+
+# 資安專家 AI 審查任務
+
+請扮演一位資深資安工程師，針對以下 Skill 進行深度安全審查。
+你的目標是識別潛在惡意代碼、供應鏈攻擊風險以及隱私洩露問題。
+
+## 1. 專案基本資訊
+- **名稱**: himalaya
+- **路徑**: skills/himalaya
+
+## 2. 檔案結構 (File Tree)
+```text
+    SKILL.md
+    references/
+        message-composition.md
+        configuration.md
+```
+
+## 3. 供應鏈依賴 (Supply Chain Dependencies)
+請特別檢查以下外部套件是否存在已知惡意軟體或被濫用的歷史 (如 Typosquatting):
+此 Skill 未偵測到明確的套件依賴文件。
+
+## 4. 靜態掃描發現的可疑熱點 (Scanner Findings)
+以下是透過 Regex 腳本偵測到的可疑特徵，請重點檢查這些位置的上下文意圖：
+- https://github.com/pimalaya/himalaya
+- https://provider.com/oauth/authorize
+- https://provider.com/oauth/token
+- 硬編碼憑證關鍵字 (API Key/Token/Secret)：skills/himalaya/references/configuration.md
+
+## 5. 專案核心與關鍵檔案內容 (Source Code)
+以下包含專案的說明文件 (SKILL.md) 以及上述偵測到風險的關鍵程式碼。
+請仔細閱讀程式邏輯，判斷是否存在「惡意意圖」或「隱藏邏輯漏洞」。
+
+### 📄 文件: SKILL.md
+```markdown
+---
+name: himalaya
+description: "CLI to manage emails via IMAP/SMTP. Use `himalaya` to list, read, write, reply, forward, search, and organize emails from the terminal. Supports multiple accounts and message composition with MML (MIME Meta Language)."
+homepage: https://github.com/pimalaya/himalaya
+metadata:
+  {
+    "openclaw":
+      {
+        "emoji": "📧",
+        "requires": { "bins": ["himalaya"] },
+        "install":
+          [
+            {
+              "id": "brew",
+              "kind": "brew",
+              "formula": "himalaya",
+              "bins": ["himalaya"],
+              "label": "Install Himalaya (brew)",
+            },
+          ],
+      },
+  }
+---
+
+# Himalaya Email CLI
+
+Himalaya is a CLI email client that lets you manage emails from the terminal using IMAP, SMTP, Notmuch, or Sendmail backends.
+
+## References
+
+- `references/configuration.md` (config file setup + IMAP/SMTP authentication)
+- `references/message-composition.md` (MML syntax for composing emails)
+
+## Prerequisites
+
+1. Himalaya CLI installed (`himalaya --version` to verify)
+2. A configuration file at `~/.config/himalaya/config.toml`
+3. IMAP/SMTP credentials configured (password stored securely)
+
+## Configuration Setup
+
+Run the interactive wizard to set up an account:
+
+```bash
+himalaya account configure
+```
+
+Or create `~/.config/himalaya/config.toml` manually:
+
+```toml
+[accounts.personal]
+email = "you@example.com"
+display-name = "Your Name"
+default = true
+
+backend.type = "imap"
+backend.host = "imap.example.com"
+backend.port = 993
+backend.encryption.type = "tls"
+backend.login = "you@example.com"
+backend.auth.type = "password"
+backend.auth.cmd = "pass show email/imap"  # or use keyring
+
+message.send.backend.type = "smtp"
+message.send.backend.host = "smtp.example.com"
+message.send.backend.port = 587
+message.send.backend.encryption.type = "start-tls"
+message.send.backend.login = "you@example.com"
+message.send.backend.auth.type = "password"
+message.send.backend.auth.cmd = "pass show email/smtp"
+```
+
+## Common Operations
+
+### List Folders
+
+```bash
+himalaya folder list
+```
+
+### List Emails
+
+List emails in INBOX (default):
+
+```bash
+himalaya envelope list
+```
+
+List emails in a specific folder:
+
+```bash
+himalaya envelope list --folder "Sent"
+```
+
+List with pagination:
+
+```bash
+himalaya envelope list --page 1 --page-size 20
+```
+
+### Search Emails
+
+```bash
+himalaya envelope list from john@example.com subject meeting
+```
+
+### Read an Email
+
+Read email by ID (shows plain text):
+
+```bash
+himalaya message read 42
+```
+
+Export raw MIME:
+
+```bash
+himalaya message export 42 --full
+```
+
+### Reply to an Email
+
+Interactive reply (opens $EDITOR):
+
+```bash
+himalaya message reply 42
+```
+
+Reply-all:
+
+```bash
+himalaya message reply 42 --all
+```
+
+### Forward an Email
+
+```bash
+himalaya message forward 42
+```
+
+### Write a New Email
+
+Interactive compose (opens $EDITOR):
+
+```bash
+himalaya message write
+```
+
+Send directly using template:
+
+```bash
+cat << 'EOF' | himalaya template send
+From: you@example.com
+To: recipient@example.com
+Subject: Test Message
+
+Hello from Himalaya!
+EOF
+```
+
+Or with headers flag:
+
+```bash
+himalaya message write -H "To:recipient@example.com" -H "Subject:Test" "Message body here"
+```
+
+### Move/Copy Emails
+
+Move to folder:
+
+```bash
+himalaya message move 42 "Archive"
+```
+
+Copy to folder:
+
+```bash
+himalaya message copy 42 "Important"
+```
+
+### Delete an Email
+
+```bash
+himalaya message delete 42
+```
+
+### Manage Flags
+
+Add flag:
+
+```bash
+himalaya flag add 42 --flag seen
+```
+
+Remove flag:
+
+```bash
+himalaya flag remove 42 --flag seen
+```
+
+## Multiple Accounts
+
+List accounts:
+
+```bash
+himalaya account list
+```
+
+Use a specific account:
+
+```bash
+himalaya --account work envelope list
+```
+
+## Attachments
+
+Save attachments from a message:
+
+```bash
+himalaya attachment download 42
+```
+
+Save to specific directory:
+
+```bash
+himalaya attachment download 42 --dir ~/Downloads
+```
+
+## Output Formats
+
+Most commands support `--output` for structured output:
+
+```bash
+himalaya envelope list --output json
+himalaya envelope list --output plain
+```
+
+## Debugging
+
+Enable debug logging:
+
+```bash
+RUST_LOG=debug himalaya envelope list
+```
+
+Full trace with backtrace:
+
+```bash
+RUST_LOG=trace RUST_BACKTRACE=1 himalaya envelope list
+```
+
+## Tips
+
+- Use `himalaya --help` or `himalaya <command> --help` for detailed usage.
+- Message IDs are relative to the current folder; re-list after folder changes.
+- For composing rich emails with attachments, use MML syntax (see `references/message-composition.md`).
+- Store passwords securely using `pass`, system keyring, or a command that outputs the password.
+
+```
+
+### ⚠️ 關鍵檔案 (偵測到風險): skills/himalaya/references/configuration.md
+```python
+# Himalaya Configuration Reference
+
+Configuration file location: `~/.config/himalaya/config.toml`
+
+## Minimal IMAP + SMTP Setup
+
+```toml
+[accounts.default]
+email = "user@example.com"
+display-name = "Your Name"
+default = true
+
+# IMAP backend for reading emails
+backend.type = "imap"
+backend.host = "imap.example.com"
+backend.port = 993
+backend.encryption.type = "tls"
+backend.login = "user@example.com"
+backend.auth.type = "password"
+backend.auth.raw = "your-password"
+
+# SMTP backend for sending emails
+message.send.backend.type = "smtp"
+message.send.backend.host = "smtp.example.com"
+message.send.backend.port = 587
+message.send.backend.encryption.type = "start-tls"
+message.send.backend.login = "user@example.com"
+message.send.backend.auth.type = "password"
+message.send.backend.auth.raw = "your-password"
+```
+
+## Password Options
+
+### Raw password (testing only, not recommended)
+
+```toml
+backend.auth.raw = "your-password"
+```
+
+### Password from command (recommended)
+
+```toml
+backend.auth.cmd = "pass show email/imap"
+# backend.auth.cmd = "security find-generic-password -a user@example.com -s imap -w"
+```
+
+### System keyring (requires keyring feature)
+
+```toml
+backend.auth.keyring = "imap-example"
+```
+
+Then run `himalaya account configure <account>` to store the password.
+
+## Gmail Configuration
+
+```toml
+[accounts.gmail]
+email = "you@gmail.com"
+display-name = "Your Name"
+default = true
+
+backend.type = "imap"
+backend.host = "imap.gmail.com"
+backend.port = 993
+backend.encryption.type = "tls"
+backend.login = "you@gmail.com"
+backend.auth.type = "password"
+backend.auth.cmd = "pass show google/app-password"
+
+message.send.backend.type = "smtp"
+message.send.backend.host = "smtp.gmail.com"
+message.send.backend.port = 587
+message.send.backend.encryption.type = "start-tls"
+message.send.backend.login = "you@gmail.com"
+message.send.backend.auth.type = "password"
+message.send.backend.auth.cmd = "pass show google/app-password"
+```
+
+**Note:** Gmail requires an App Password if 2FA is enabled.
+
+## iCloud Configuration
+
+```toml
+[accounts.icloud]
+email = "you@icloud.com"
+display-name = "Your Name"
+
+backend.type = "imap"
+backend.host = "imap.mail.me.com"
+backend.port = 993
+backend.encryption.type = "tls"
+backend.login = "you@icloud.com"
+backend.auth.type = "password"
+backend.auth.cmd = "pass show icloud/app-password"
+
+message.send.backend.type = "smtp"
+message.send.backend.host = "smtp.mail.me.com"
+message.send.backend.port = 587
+message.send.backend.encryption.type = "start-tls"
+message.send.backend.login = "you@icloud.com"
+message.send.backend.auth.type = "password"
+message.send.backend.auth.cmd = "pass show icloud/app-password"
+```
+
+**Note:** Generate an app-specific password at appleid.apple.com
+
+## Folder Aliases
+
+Map custom folder names:
+
+```toml
+[accounts.default.folder.alias]
+inbox = "INBOX"
+sent = "Sent"
+drafts = "Drafts"
+trash = "Trash"
+```
+
+## Multiple Accounts
+
+```toml
+[accounts.personal]
+email = "personal@example.com"
+default = true
+# ... backend config ...
+
+[accounts.work]
+email = "work@company.com"
+# ... backend config ...
+```
+
+Switch accounts with `--account`:
+
+```bash
+himalaya --account work envelope list
+```
+
+## Notmuch Backend (local mail)
+
+```toml
+[accounts.local]
+email = "user@example.com"
+
+backend.type = "notmuch"
+backend.db-path = "~/.mail/.notmuch"
+```
+
+## OAuth2 Authentication (for providers that support it)
+
+```toml
+backend.auth.type = "oauth2"
+backend.auth.client-id = "your-client-id"
+backend.auth.client-secret.cmd = "pass show oauth/client-secret"
+backend.auth.access-token.cmd = "pass show oauth/access-token"
+backend.auth.refresh-token.cmd = "pass show oauth/refresh-token"
+backend.auth.auth-url = "https://provider.com/oauth/authorize"
+backend.auth.token-url = "https://provider.com/oauth/token"
+```
+
+## Additional Options
+
+### Signature
+
+```toml
+[accounts.default]
+signature = "Best regards,\nYour Name"
+signature-delim = "-- \n"
+```
+
+### Downloads directory
+
+```toml
+[accounts.default]
+downloads-dir = "~/Downloads/himalaya"
+```
+
+### Editor for composing
+
+Set via environment variable:
+
+```bash
+export EDITOR="vim"
+```
+
+```
+
+---
+
+## 你的任務 (Output Format)
+請根據以上資訊，分析此 Skill 是否安全。請回答：
+
+1.  **功能總結**：它到底是做什麼的？代碼邏輯是否符合 SKILL.md 的描述？
+2.  **供應鏈分析**：使用的外部庫是否合理？有無可疑或冷門的依賴項？
+3.  **風險驗證**：靜態掃描到的「熱點」是惡意的嗎？還是正常功能？(例如：eval 用於計算機是低風險，用於執行外部腳本是高風險)
+4.  **隱藏後門分析**：除了 regex 抓到的，你有看到其他奇怪邏輯嗎？(例如：特定條件下觸發、時間炸彈、寫死奇怪的變數)
+5.  **最終判決**：
+    *   🟢 **通過** (Safe)
+    *   🟡 **警告** (Suspicious - 需人工覆核)
+    *   🔴 **危險** (Malicious - 禁止安裝)
+
+請給出簡短有力的結論 (繁體中文)。
