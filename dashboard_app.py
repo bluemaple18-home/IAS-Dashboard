@@ -725,24 +725,76 @@ def show_sub_report(file_path, title_prefix):
             # (Sort logic uses actual_soul_metric which is already defined above)
 
 
-            # --- 警示標準 UI ---
+            # --- 警示標準與打包器 UI 整併 ---
             # override actual_soul_metric for IVT to use SIVT as requested by user
             if soul_key == "IVT" and '% SIVT' in agg_df.columns:
                 actual_soul_metric = '% SIVT'
 
-            with row1_c3:
-                curr_t = {}
-                if actual_soul_metric and actual_soul_metric in agg_df.columns:
-                    def_val = 5.0 if any(x in actual_soul_metric for x in ["IVT", "RVI"]) else 50.0
-                    if "Brand Safety" in actual_soul_metric: def_val = 90.0
-                    st.markdown(f"**🎯 警示標準**")
-                    curr_t[actual_soul_metric] = st.number_input(f"{actual_soul_metric}", min_value=0.0, max_value=100.0, value=def_val, step=1.0, key=f"soul_t_{title_prefix}")
+            # --- 專屬達標打包器 UI ---
+            st.markdown("---")
+            pack_col1, pack_col2 = st.columns([1, 1])
+            with pack_col1:
+                def_t = 5.0 if any(x in str(actual_soul_metric) for x in ["IVT", "RVI"]) else 70.0
+                if actual_soul_metric and "Brand Safety" in actual_soul_metric: def_t = 95.0
                 
+                is_risk_metric = False
+                if actual_soul_metric:
+                    is_risk_metric = any(x in actual_soul_metric for x in ["IVT", "RVI", "seeThrough"])
+                    
+                if is_risk_metric:
+                    pack_th = st.number_input(f"🎯 達標/警示門檻: {actual_soul_metric} (≤ %)", value=def_t, min_value=0.0, max_value=100.0, step=0.1, key=f"pack_th_{title_prefix}")
+                else:
+                    pack_th = st.number_input(f"🎯 達標/警示門檻: {actual_soul_metric} (≥ %)", value=def_t, min_value=0.0, max_value=100.0, step=0.5, key=f"pack_th_{title_prefix}")
+            with pack_col2:
+                st.markdown("<br>", unsafe_allow_html=True)
+                apply_pack = st.checkbox("✅ 執行獨立打包優化 (自動剔除劣質清單使整體達標)", value=False, key=f"apply_pack_{title_prefix}")
+                
+            if apply_pack and actual_soul_metric and actual_soul_metric in agg_df.columns:
+                # 準備貪婪剔除
+                dim_col = '供應商名稱' if view_level == '供應商' else ('網站名稱' if view_level == '網站' else '版位編號')
+                
+                # 確保 agg_df 中包含 dim_col，若無法過濾則放棄
+                if dim_col in agg_df.columns:
+                    orig_items = agg_df[dim_col].tolist()
+                    current_pool = orig_items.copy()
+                    
+                    max_iters = len(orig_items)
+                    iters = 0
+                    
+                    with st.spinner(f"正在優化 {actual_soul_metric} 的組合..."):
+                        while len(current_pool) > 0 and iters < max_iters:
+                            iters += 1
+                            pool_raw_df = final_df[final_df[dim_col].isin(current_pool)]
+                            if pool_raw_df.empty: break
+                            
+                            pool_total = calculate_metrics(pool_raw_df)
+                            
+                            # 檢查該單一指標是否達標
+                            if actual_soul_metric not in pool_total: break 
+                                
+                            current_val = pool_total[actual_soul_metric]
+                            
+                            is_passed = (current_val <= pack_th) if is_risk_metric else (current_val >= pack_th)
+                                
+                            if is_passed: break # 達標！跳出迴圈
+                                
+                            # 未達標，剃除當前池子中最差的一個
+                            pool_agg = agg_df[agg_df[dim_col].isin(current_pool)]
+                            worst_item = pool_agg.loc[pool_agg[actual_soul_metric].idxmax() if is_risk_metric else pool_agg[actual_soul_metric].idxmin(), dim_col]
+                                
+                            current_pool.remove(worst_item)
+                    
+                    if len(current_pool) == 0:
+                        st.error("⚠️ 條件過於嚴格，即使剔除所有項目也無法使整體達標。")
+                        agg_df = agg_df.iloc[0:0] # 清空
+                    else:
+                        agg_df = agg_df[agg_df[dim_col].isin(current_pool)]
+                        st.success(f"✅ 已成功打包！共剔除 {len(orig_items) - len(current_pool)} 筆，保留 {len(current_pool)} 筆，使其整體總結算符合標準。")
+
+
             # --- 圓餅圖：不合格網站佔比 (Compliance Pie Charts) ---
             if actual_soul_metric and actual_soul_metric in agg_df.columns:
-                limit = curr_t.get(actual_soul_metric, def_val)
-                # 判斷標準：是否為「越低越好」的風險指標
-                is_risk_metric = any(x in actual_soul_metric for x in ["IVT", "RVI", "seeThrough"])
+                limit = pack_th
                 
                 # 1. 準備網站級別數據 (必須回到網站層級聚合以正確計算網站數)
                 # 需從 final_df 重新聚合，因為 agg_df 可能是供應商或版位層級
@@ -856,16 +908,16 @@ def show_sub_report(file_path, title_prefix):
                                 "不符合流量佔比"        # New (Filtered)
                             ],
                             "數值": [
-                                f"{subset_traffic:,.0f}",
-                                f"{traffic_share_global:.2f}%", 
-                                f"{qualified_count}", 
-                                f"{qual_rate_internal:.2f}%", 
-                                f"{qual_share_global:.2f}%",
-                                f"{qual_share_filtered:.2f}%",
-                                f"{unqualified_count}", 
-                                f"{unq_rate_internal:.2f}%", 
-                                f"{unq_share_global:.2f}%",
-                                f"{unq_share_filtered:.2f}%"
+                                f"{subset_traffic:,.2f}",
+                                f"{traffic_share_global:,.2f}%", 
+                                f"{qualified_count:,.2f}", 
+                                f"{qual_rate_internal:,.2f}%", 
+                                f"{qual_share_global:,.2f}%",
+                                f"{qual_share_filtered:,.2f}%",
+                                f"{unqualified_count:,.2f}", 
+                                f"{unq_rate_internal:,.2f}%", 
+                                f"{unq_share_global:,.2f}%",
+                                f"{unq_share_filtered:,.2f}%"
                             ]
                         }
                         
@@ -931,9 +983,13 @@ def show_sub_report(file_path, title_prefix):
                     if c in thresholds_map:
                         styler.map(lambda v: color_logic(v, c), subset=[c])
 
-                # Formatting: 自動對所有名稱含 % 的欄位套用百分比格式
+                # Formatting: 自動對所有名稱含 %、Rate 的欄位套用百分比格式
                 perc_cols = [c for c in df_source.columns if '%' in c or 'Rate' in c or 'rate' in c]
                 fmt_dict = {col: "{:.2f}%" for col in perc_cols}
+                # 其他數值欄位：加上千分位與小數兩位
+                other_cols = [c for c in df_source.columns if c not in perc_cols and pd.api.types.is_numeric_dtype(df_source[c])]
+                for col in other_cols:
+                    fmt_dict[col] = "{:,.2f}"
                 styler.format(fmt_dict)
                 
                 return styler
@@ -949,18 +1005,19 @@ def show_sub_report(file_path, title_prefix):
             metrics_order = [c for c in display_cols if c in total_sum.columns]
             total_sum = total_sum[metrics_order]
             
-            # 定義格式化字典
+            # 定義格式化字典 (供 style.format 呼叫)
             numeric_cols_for_fmt = all_raw_metrics + [c for c in calculated_perc_cols if c in agg_df.columns]
-            fmt = {c: "{:,.2f}%" for c in numeric_cols_for_fmt if '%' in c}
+            fmt = {c: "{:,.2f}%" for c in numeric_cols_for_fmt if '%' in c or 'Rate' in c or 'rate' in c}
             for c in numeric_cols_for_fmt: 
-                if '%' not in c: fmt[c] = "{:,.0f}"
-
-            styler_total = apply_sub_style(total_sum.style.format(fmt), curr_t)
+                if c not in fmt: fmt[c] = "{:,.2f}"
+            
+            pack_t_map = {actual_soul_metric: pack_th} if actual_soul_metric else {}
+            styler_total = apply_sub_style(total_sum.style.format(fmt), pack_t_map)
             st.dataframe(styler_total, use_container_width=True, hide_index=True)
 
             # --- 顯示主要報表 ---
             st.markdown(f"**📋 數據報表內容**")
-            styler_main = apply_sub_style(agg_df[display_cols].style.format(fmt), curr_t)
+            styler_main = apply_sub_style(agg_df[display_cols].style.format(fmt), pack_t_map)
             st.dataframe(styler_main, use_container_width=True, height=600, hide_index=True)
 
         else:
@@ -1529,8 +1586,10 @@ def render_supplier_trend_report(df, selected_suppliers, key_suffix):
         
         # 設定格式
         format_map = {c: "{:.2f}%" for c in all_metrics_list if c in summary_final.columns}
-        if 'Total Tracked Ads' in summary_final.columns:
-            format_map['Total Tracked Ads'] = "{:,.0f}"
+        # 針對非百分比的數值指標，加上千分位與小數第二位
+        for c in summary_final.columns:
+            if c not in format_map and pd.api.types.is_numeric_dtype(summary_final[c]):
+                format_map[c] = "{:,.2f}"
             
         st.dataframe(summary_final.style.format(format_map), use_container_width=True, height=500)
     else:
@@ -1626,9 +1685,7 @@ with tab2:
                 st.info(f"無符合門檻 (>= {eligible_threshold}) 的數據")
             else:
                 sort_col = 'Total Tracked Ads'
-                if sort_col in supp_res.columns:
-                    supp_res = supp_res.sort_values(sort_col, ascending=False)
-                
+                # 已將打包器移至各別 01~05 子表中，此處只作基本表現數據顯示
                 supp_detail_res = supp_res.set_index('Supplier')
                 
                 # 移動新欄位到前面 (Supplier 之後)
