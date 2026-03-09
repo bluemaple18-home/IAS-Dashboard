@@ -255,7 +255,8 @@ def load_data(file_path):
         st.error(f"Error loading {file_path}: {e}")
         return pd.DataFrame()
 
-main_file = "/Users/matt/IAS-Dashboard/data/00_全媒體整合報表_版位級別.csv"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+main_file = os.path.join(BASE_DIR, "data", "00_全媒體整合報表_版位級別.csv")
 df = load_data(main_file)
 if df.empty:
     st.stop()
@@ -1101,8 +1102,12 @@ def show_sub_report_tier(file_path, title_prefix):
         else:
             id_keys = ['供應商名稱', '版位編號']
             agg_numeric = df.groupby(id_keys)[all_raw_metrics].sum()
-            agg_names = df.groupby(id_keys)[['網站名稱', '版位名稱', '版位編號']].first()
-            agg_df = pd.concat([agg_names, agg_numeric], axis=1).reset_index(drop=True)
+            other_dims = [c for c in ['網站名稱', '版位名稱'] if c in df.columns]
+            if other_dims:
+                agg_names = df.groupby(id_keys)[other_dims].first()
+                agg_df = pd.concat([agg_names, agg_numeric], axis=1).reset_index()
+            else:
+                agg_df = agg_numeric.reset_index()
 
         agg_df = robust_calc(agg_df)
 
@@ -1706,15 +1711,15 @@ with tab2:
                 st.dataframe(supp_detail_res.style.format(format_dict_supp), use_container_width=True, height=600)
             
         elif report_choice == "💎 05 優質曝光明細":
-            show_sub_report("/Users/matt/IAS-Dashboard/data/05_優質曝光整合報表_版位級別.csv", "05 優質曝光")
+            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/05_優質曝光整合報表_版位級別.csv", "05 優質曝光")
         elif report_choice == "🏗️ 03 網站品質明細":
-            show_sub_report("/Users/matt/IAS-Dashboard/data/03_網站品質整合報表_版位級別.csv", "03 網站品質")
+            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/03_網站品質整合報表_版位級別.csv", "03 網站品質")
         elif report_choice == "🚫 02 無效流量明細":
-            show_sub_report("/Users/matt/IAS-Dashboard/data/02_無效流量整合報表_版位級別.csv", "02 無效流量")
+            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/02_無效流量整合報表_版位級別.csv", "02 無效流量")
         elif report_choice == "👁️ 01 可視性明細":
-            show_sub_report("/Users/matt/IAS-Dashboard/data/01_可視性廣告整合報表_版位級別.csv", "01 可視性")
+            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/01_可視性廣告整合報表_版位級別.csv", "01 可視性")
         elif report_choice == "🛡️ 04 品牌安全性明細":
-            show_sub_report("/Users/matt/IAS-Dashboard/data/04_品牌安全性整合報表_版位級別.csv", "04 品牌安全性")
+            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/04_品牌安全性整合報表_版位級別.csv", "04 品牌安全性")
 
 # === TAB 3: 總表 2 (梯隊系統) ===
 with tab3:
@@ -1946,15 +1951,15 @@ with tab3:
             )
                 
         elif report_choice2 == "💎 05 優質曝光明細":
-            show_sub_report_tier("/Users/matt/IAS-Dashboard/data/05_優質曝光整合報表_版位級別.csv", "05 優質曝光")
+            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/05_優質曝光整合報表_版位級別.csv", "05 優質曝光")
         elif report_choice2 == "🏗️ 03 網站品質明細":
-            show_sub_report_tier("/Users/matt/IAS-Dashboard/data/03_網站品質整合報表_版位級別.csv", "03 網站品質")
+            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/03_網站品質整合報表_版位級別.csv", "03 網站品質")
         elif report_choice2 == "🚫 02 無效流量明細":
-            show_sub_report_tier("/Users/matt/IAS-Dashboard/data/02_無效流量整合報表_版位級別.csv", "02 無效流量")
+            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/02_無效流量整合報表_版位級別.csv", "02 無效流量")
         elif report_choice2 == "👁️ 01 可視性明細":
-            show_sub_report_tier("/Users/matt/IAS-Dashboard/data/01_可視性廣告整合報表_版位級別.csv", "01 可視性")
+            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/01_可視性廣告整合報表_版位級別.csv", "01 可視性")
         elif report_choice2 == "🛡️ 04 品牌安全性明細":
-            show_sub_report_tier("/Users/matt/IAS-Dashboard/data/04_品牌安全性整合報表_版位級別.csv", "04 品牌安全性")
+            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/04_品牌安全性整合報表_版位級別.csv", "04 品牌安全性")
 
 
 
