@@ -18,8 +18,17 @@ fi
 # 2. Update Dependencies
 if [ -f "requirements.txt" ]; then
     echo "📦 Checking dependencies..."
-    source .venv/bin/activate
-    pip install -r requirements.txt
+    if ! command -v uv >/dev/null 2>&1; then
+        echo "❌ uv 未安裝，無法更新依賴。請先安裝 uv：https://docs.astral.sh/uv/"
+        exit 1
+    fi
+
+    if [ ! -d ".venv" ]; then
+        echo "🧰 找不到 .venv，正在建立虛擬環境..."
+        uv venv
+    fi
+
+    uv pip install -r requirements.txt
 else
     echo "⚠️ No requirements.txt found."
 fi

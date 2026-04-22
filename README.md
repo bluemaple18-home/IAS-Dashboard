@@ -10,10 +10,17 @@
 
 ## 環境啟動
 ```bash
-cd /Users/matt/IAS-Dashboard
+cd /path/to/IAS-Dashboard
+uv venv
 source .venv/bin/activate
+uv pip install -r requirements.txt
 ```
 
 ## 使用說明
 1. 先將待處理檔案放入此目錄或 Downloads。
 2. 執行相對應腳本進行處理。
+
+## 儀表板（Streamlit）
+```bash
+streamlit run dashboard_app.py
+```

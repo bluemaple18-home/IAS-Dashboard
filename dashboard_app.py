@@ -256,6 +256,11 @@ def load_data(file_path):
         return pd.DataFrame()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+
+def data_path(filename):
+    return os.path.join(DATA_DIR, filename)
+
 main_file = os.path.join(BASE_DIR, "data", "00_全媒體整合報表_版位級別.csv")
 df = load_data(main_file)
 if df.empty:
@@ -621,7 +626,7 @@ def show_sub_report(file_path, title_prefix):
             # [FIX] Define min_eligible to prevent NameError
             # --- 進階設定 (Advanced Settings) ---
             with st.sidebar.expander("⚙️ 進階設定 (Advanced)", expanded=True):
-                min_eligible = st.number_input("📉 最小樣本數過濾 (Min Eligible)", min_value=0, value=100, step=10, help="隱藏分母 (Eligible) 小於此數值的項目")
+                min_eligible = st.number_input("📉 最小樣本數過濾 (Min Eligible)", min_value=0, value=100, step=10, key=f"adv_min_el_{title_prefix}", help="隱藏分母 (Eligible) 小於此數值的項目")
             
             # 應用篩選
             final_df = temp_df
@@ -820,6 +825,10 @@ def show_sub_report(file_path, title_prefix):
                     ).reset_index()
                     
                     agg_site = robust_calc(agg_site)
+                    
+                    # [FIX]: Apply min_eligible to agg_site (Pie chart and Unqualified list)
+                    if min_eligible > 0 and denom_col and denom_col in agg_site.columns:
+                        agg_site = agg_site[agg_site[denom_col] >= min_eligible]
                     
                     # 2. 判定合格與否
                     if is_risk_metric:
@@ -1711,15 +1720,15 @@ with tab2:
                 st.dataframe(supp_detail_res.style.format(format_dict_supp), use_container_width=True, height=600)
             
         elif report_choice == "💎 05 優質曝光明細":
-            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/05_優質曝光整合報表_版位級別.csv", "05 優質曝光")
+            show_sub_report(data_path("05_優質曝光整合報表_版位級別.csv"), "05 優質曝光")
         elif report_choice == "🏗️ 03 網站品質明細":
-            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/03_網站品質整合報表_版位級別.csv", "03 網站品質")
+            show_sub_report(data_path("03_網站品質整合報表_版位級別.csv"), "03 網站品質")
         elif report_choice == "🚫 02 無效流量明細":
-            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/02_無效流量整合報表_版位級別.csv", "02 無效流量")
+            show_sub_report(data_path("02_無效流量整合報表_版位級別.csv"), "02 無效流量")
         elif report_choice == "👁️ 01 可視性明細":
-            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/01_可視性廣告整合報表_版位級別.csv", "01 可視性")
+            show_sub_report(data_path("01_可視性廣告整合報表_版位級別.csv"), "01 可視性")
         elif report_choice == "🛡️ 04 品牌安全性明細":
-            show_sub_report("/Users/mattkuo/Projects/IAS-Dashboard/data/04_品牌安全性整合報表_版位級別.csv", "04 品牌安全性")
+            show_sub_report(data_path("04_品牌安全性整合報表_版位級別.csv"), "04 品牌安全性")
 
 # === TAB 3: 總表 2 (梯隊系統) ===
 with tab3:
@@ -1951,15 +1960,15 @@ with tab3:
             )
                 
         elif report_choice2 == "💎 05 優質曝光明細":
-            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/05_優質曝光整合報表_版位級別.csv", "05 優質曝光")
+            show_sub_report_tier(data_path("05_優質曝光整合報表_版位級別.csv"), "05 優質曝光")
         elif report_choice2 == "🏗️ 03 網站品質明細":
-            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/03_網站品質整合報表_版位級別.csv", "03 網站品質")
+            show_sub_report_tier(data_path("03_網站品質整合報表_版位級別.csv"), "03 網站品質")
         elif report_choice2 == "🚫 02 無效流量明細":
-            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/02_無效流量整合報表_版位級別.csv", "02 無效流量")
+            show_sub_report_tier(data_path("02_無效流量整合報表_版位級別.csv"), "02 無效流量")
         elif report_choice2 == "👁️ 01 可視性明細":
-            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/01_可視性廣告整合報表_版位級別.csv", "01 可視性")
+            show_sub_report_tier(data_path("01_可視性廣告整合報表_版位級別.csv"), "01 可視性")
         elif report_choice2 == "🛡️ 04 品牌安全性明細":
-            show_sub_report_tier("/Users/mattkuo/Projects/IAS-Dashboard/data/04_品牌安全性整合報表_版位級別.csv", "04 品牌安全性")
+            show_sub_report_tier(data_path("04_品牌安全性整合報表_版位級別.csv"), "04 品牌安全性")
 
 
 

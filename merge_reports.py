@@ -1,6 +1,9 @@
 import pandas as pd
 import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+
 def merge_reports(hourly_path, ssp_path, antifraud_path=None, famous_path=None, subnetwork_path=None):
     print(f"🔗 正在開始整合報表...")
     print(f"📂 時報檔案: {hourly_path}")
@@ -43,9 +46,13 @@ def merge_reports(hourly_path, ssp_path, antifraud_path=None, famous_path=None, 
         
         # 如果是原始檔案，需要拆解時間
         if '日期' not in df_ssp_raw.columns:
-            time_split = df_ssp_raw['時間'].str.split(' ', expand=True)
+            time_split = df_ssp_raw['時間'].astype(str).str.split(' ', expand=True)
             df_ssp_raw['日期'] = time_split[0].str.replace('-', '', regex=False)
-            df_ssp_raw['小時'] = time_split[1].str.split(':', expand=True)[0]
+            # 容錯處理：如果沒有小時資訊，預設為 '00'
+            if 1 in time_split.columns:
+                df_ssp_raw['小時'] = time_split[1].str.split(':', expand=True)[0]
+            else:
+                df_ssp_raw['小時'] = '00'
         
         # 重新命名關聯欄位以匹配時報
         df_ssp_raw = df_ssp_raw.rename(columns={ssp_id_col: '版位編號'})
@@ -58,14 +65,33 @@ def merge_reports(hourly_path, ssp_path, antifraud_path=None, famous_path=None, 
             
         df_ssp_clean = df_ssp_raw[keep_cols].drop_duplicates(['日期', '小時', '版位編號'])
         
-        # 3. 執行 Left Join (以時報為主)
-        print("🤝 正在執行數據比對 (三維度: 日期+小時+版位)...")
+        # 3. 執行比對邏輯 (分兩階段：精確比對 & 保底比對)
+        print("🤝 正在執行數據比對...")
+        
+        # 先分出這兩類資料
+        # 假設 '分秒' == '0000' 且 '小時' == '00' 的可能是墊補資料 (或直接檢查原始 ID 是否為純數字，但這裡先用欄位標記判斷)
+        # 這裡我們用一個更保險的做法：先跑一次精確比對，沒對上的再跑保底
+        
+        # 第一步：日期+小時+版位 的精確比對
         final_df = pd.merge(
             df_hourly, 
             df_ssp_clean, 
             on=['日期', '小時', '版位編號'], 
             how='left'
         )
+        
+        # 第二步：保底比對 (針對沒對上供應商的，嘗試只用版位 ID 去對)
+        unmatched_mask = final_df['供應商名稱'].isna()
+        if unmatched_mask.any():
+            print(f"🕵️ 發現 {unmatched_mask.sum()} 筆未對上資料，啟動「僅版位編號」保底比對...")
+            # 建立一個單純的 ID 對應表
+            id_mapping = df_ssp_clean[['版位編號', '供應商名稱', '網站', '網站名稱', '版位名稱']].drop_duplicates('版位編號', keep='first')
+            
+            # 使用 update 或是重新 merge
+            final_df.loc[unmatched_mask, '供應商名稱'] = final_df.loc[unmatched_mask, '版位編號'].map(id_mapping.set_index('版位編號')['供應商名稱'])
+            final_df.loc[unmatched_mask, '網站'] = final_df.loc[unmatched_mask, '版位編號'].map(id_mapping.set_index('版位編號')['網站'])
+            final_df.loc[unmatched_mask, '網站名稱'] = final_df.loc[unmatched_mask, '版位編號'].map(id_mapping.set_index('版位編號')['網站名稱'])
+            final_df.loc[unmatched_mask, '版位名稱'] = final_df.loc[unmatched_mask, '版位編號'].map(id_mapping.set_index('版位編號')['版位名稱'])
         
         
         # --- 新增維度邏輯 ---
@@ -209,6 +235,6 @@ def merge_reports(hourly_path, ssp_path, antifraud_path=None, famous_path=None, 
         return None
 
 if __name__ == "__main__":
-    hourly = "/Users/matt/Downloads/sample-Viewability_20260125-20260126_hourly_report.xlsx"
-    ssp = "/Users/matt/Downloads/SSP_2026-01-26_2026-01-27_(一般媒體).xlsx"
+    hourly = os.path.join(DATA_DIR, "sample-Viewability_20260315-20260413_hourly_report.xlsx")
+    ssp = "/Users/mattkuo/Downloads/SSP_2026-04-01_2026-04-14_(一般媒體).xlsx"
     merge_reports(hourly, ssp)
